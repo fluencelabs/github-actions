@@ -1,0 +1,37 @@
+name: Set cargo dependency version
+description: |
+  Sets cargo dependency version in projects root Cargo.toml manifest.
+
+inputs:
+  package:
+    description: "Dependency name"
+    required: true
+  substitute:
+    description: "Substitute to pass to sed"
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set ${{ inputs.package }} version
+      run: |
+        sed -i 's#\(${{ inputs.package }} =\) .*#\1 ${{ inputs.substitute }}#g' Cargo.toml
+
+    - name: Update Cargo.lock
+      run: cargo update -p ${{ inputs.package }}
+
+    - name: Install cargo-lock
+      uses: baptiste0928/cargo-install@v1
+      with:
+        crate: cargo-lock
+        features: cli
+
+    - name: Fail if more than one source found
+      run: |
+        SOURCES=$(cargo lock list -s ${{ inputs.package }})
+        echo $SOURCES
+        if (( $(echo $SOURCES) | wc -l) > 1 )); then
+          echo "More than one source found"
+          exit 1
+        fi
