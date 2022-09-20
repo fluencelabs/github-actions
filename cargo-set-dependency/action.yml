@@ -15,10 +15,12 @@ runs:
 
   steps:
     - name: Set ${{ inputs.package }} version
+      shell: bash
       run: |
         sed -i 's#\(${{ inputs.package }} =\) .*#\1 ${{ inputs.substitute }}#g' Cargo.toml
 
     - name: Update Cargo.lock
+      shell: bash
       run: cargo update -p ${{ inputs.package }}
 
     - name: Install cargo-lock
@@ -28,10 +30,11 @@ runs:
         features: cli
 
     - name: Fail if more than one source found
+      shell: bash
       run: |
-        SOURCES=$(cargo lock list -s ${{ inputs.package }})
+        SOURCES=$(cargo lock list -s -p ${{ inputs.package }})
         echo $SOURCES
-        if (( $(echo $SOURCES) | wc -l) > 1 )); then
+        if (( $(echo $SOURCES | wc -l) > 1 )); then
           echo "More than one source found"
           exit 1
         fi
