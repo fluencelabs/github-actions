@@ -64,7 +64,7 @@ runs:
         INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
         # if version set check version field
         if version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -c -w plain '.version'); then
-          if [[ $version != $LOCK_VERSION  ]]; then
+          if ! [[ $LOCK_VERSION =~ $version  ]]; then
             echo "$version doesn't match source $LOCK_VERSION"
             exit 1
           fi
