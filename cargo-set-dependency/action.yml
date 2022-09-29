@@ -78,4 +78,4 @@ runs:
               exit 1
             fi
           done
-        done
+        fi
