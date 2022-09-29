@@ -64,8 +64,8 @@ runs:
         INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
         # if version set check version field
         if version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -c -w plain '.version'); then
-          if ! [[ $LOCK_VERSION =~ $version  ]]; then
-            echo "$version doesn't match source $LOCK_VERSION"
+          if ! [[ $version =~ $LOCK_VERSION  ]]; then
+            echo "$version doesn't match $LOCK_VERSION found in Cargo.lock"
             exit 1
           fi
         # else check that each value of version input json is found in dependency source
