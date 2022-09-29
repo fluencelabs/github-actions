@@ -23,13 +23,13 @@ runs:
       run: |
         # Print ${{ inputs.package }} version
         echo '${{ inputs.version }}' | dasel -p json --color
-        echo "::set-output name=json::$(dasel -p json -c)"
+        export VERSION_COMPACT="$(dasel -p json -c)"
 
     - name: Set ${{ inputs.package }} version
       shell: bash
       run: |
         # Set ${{ inputs.package }} version
-        version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
+        version=$(echo $VERSION_COMPACT | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
 
         sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
 
@@ -61,9 +61,9 @@ runs:
         # Check that ${{ inputs.package }} source found in Cargo.lock matches input
         SOURCE=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).source" -m)
         LOCK_VERSION=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).version" -m)
-        INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
+        INPUT=$(echo $VERSION_COMPACT | dasel -p json -m -w plain '.[*]')
         # if version set check version field
-        if version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -c -w plain '.version'); then
+        if version=$(echo $VERSION_COMPACT | dasel -p json -c -w plain '.version'); then
           if [[ $version != $LOCK_VERSION  ]]; then
             echo "$version doesn't match source $LOCK_VERSION"
             exit 1
@@ -71,7 +71,7 @@ runs:
         # else check that each value of version input json is found in dependency source
         else
           # flatten values from provided json
-          INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
+          INPUT=$(echo $VERSION_COMPACT | dasel -p json -m -w plain '.[*]')
           for param in $INPUT; do
             if ! [[ $SOURCE =~ $param ]]; then
               echo "$param not found in $SOURCE"
