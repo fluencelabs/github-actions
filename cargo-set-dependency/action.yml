@@ -19,15 +19,17 @@ runs:
 
     - name: Print ${{ inputs.package }} version
       shell: bash
+      id: version
       run: |
         # Print ${{ inputs.package }} version
         echo '${{ inputs.version }}' | dasel -p json --color
+        echo "::set-output name=json::$(echo '${{ inputs.version }}' | dasel -p json -c)"
 
     - name: Set ${{ inputs.package }} version
       shell: bash
       run: |
         # Set ${{ inputs.package }} version
-        version=$(echo '${{ inputs.version }}' | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
+        version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
 
         sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
 
@@ -57,14 +59,23 @@ runs:
       shell: bash
       run: |
         # Check that ${{ inputs.package }} source found in Cargo.lock matches input
-        # get dependency source
         SOURCE=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).source" -m)
-        # flatten values from provided json
-        INPUT=$(echo '${{ inputs.version }}' | dasel -p json -m -w plain '.[*]')
-        # check that each value is found in dependency source
-        for param in $INPUT; do
-          if ! [[ $SOURCE =~ $param ]]; then
-            echo "$param not found in $SOURCE"
+        LOCK_VERSION=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).version" -m)
+        INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
+        # if version set check version field
+        if version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -c -w plain '.version'); then
+          if ! [[ $version =~ $LOCK_VERSION  ]]; then
+            echo "$version doesn't match $LOCK_VERSION found in Cargo.lock"
             exit 1
           fi
-        done
+        # else check that each value of version input json is found in dependency source
+        else
+          # flatten values from provided json
+          INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
+          for param in $INPUT; do
+            if ! [[ $SOURCE =~ $param ]]; then
+              echo "$param not found in $SOURCE"
+              exit 1
+            fi
+          done
+        fi
