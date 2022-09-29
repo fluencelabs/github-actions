@@ -17,13 +17,19 @@ runs:
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
 
+    - name: Print ${{ inputs.package }} version
+      shell: bash
+      run: |
+        # Print ${{ inputs.package }} version
+        echo '${{ inputs.version }}' | dasel -p json --color
+
     - name: Set ${{ inputs.package }} version
       shell: bash
       run: |
+        # Set ${{ inputs.package }} version
         version=$(echo '${{ inputs.version }}' | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
 
         sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
-        cat Cargo.toml
 
     - name: Update Cargo.lock
       shell: bash
