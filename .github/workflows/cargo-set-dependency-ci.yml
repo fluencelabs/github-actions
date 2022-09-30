@@ -2,8 +2,10 @@ name: Test cargo-set-dependency
 
 on:
   pull_request:
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "cargo-set-dependency/**"
+      - ".github/workflows/cargo-set-dependency-ci.yml"
+      - "!**.md"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
