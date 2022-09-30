@@ -29,8 +29,8 @@ runs:
       shell: bash
       run: |
         # Set ${{ inputs.package }} version
-        version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json --format '{ {{ $first := true }}{{ range $k, $v := . }}{{ if $first }}{{ $first = false }}{{ else }}, {{ end }}{{ $k }} = "{{ $v }}"{{ end }} }')
-
+        version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -w toml)
+        version="{ ${version//$'\n'/, } }"
         sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
 
     - name: Update Cargo.lock
@@ -39,18 +39,25 @@ runs:
         CARGO_UNSTABLE_SPARSE_REGISTRY: true
       run: cargo update -p ${{ inputs.package }}
 
+    - name: Parse Cargo.lock and prepare variables
+      shell: bash
+      run: |
+        # Parce Cargo.lock and prepare variables
+        echo "LOCK_SOURCE=$(dasel -f Cargo.lock -p toml 'package.(name=${{ inputs.package }}).source' -m)" >> $GITHUB_ENV
+        echo "LOCK_VERSION=$(dasel -f Cargo.lock -p toml 'package.(name=${{ inputs.package }}).version' -m)" >> $GITHUB_ENV
+        echo "VERSION=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -w plain '.version' 2>/dev/null)" >> $GITHUB_ENV
+        echo "GIT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -w plain '.git' 2>/dev/null)" >> $GITHUB_ENV
+
     - name: Fail if more than one source found
       shell: bash
       run: |
         # Fail if more than one source found
-        # get all dependency sources
-        SOURCES=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).source" -m)
-        echo $SOURCES
-        if (( $(echo $SOURCES | wc -l) > 1 )); then
+        echo $LOCK_SOURCE
+        if (( $(echo $LOCK_SOURCE | wc -l) > 1 )); then
           cat <<-ERROR
           More than one source found.
           ${{ inputs.package }} should be set in root Cargo.toml file for all
-          workspace members with "workspace.dependency".
+          workspace members with "[workspace.dependencies]".
         ERROR
           exit 1
         fi
@@ -59,23 +66,4 @@ runs:
       shell: bash
       run: |
         # Check that ${{ inputs.package }} source found in Cargo.lock matches input
-        SOURCE=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).source" -m)
-        LOCK_VERSION=$(dasel -f Cargo.lock -p toml "package.(name=${{ inputs.package }}).version" -m)
-        INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
-        # if version set check version field
-        if version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -c -w plain '.version'); then
-          if ! [[ $version =~ $LOCK_VERSION  ]]; then
-            echo "$version doesn't match $LOCK_VERSION found in Cargo.lock"
-            exit 1
-          fi
-        # else check that each value of version input json is found in dependency source
-        else
-          # flatten values from provided json
-          INPUT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -m -w plain '.[*]')
-          for param in $INPUT; do
-            if ! [[ $SOURCE =~ $param ]]; then
-              echo "$param not found in $SOURCE"
-              exit 1
-            fi
-          done
-        fi
+        ${{ github.action_path }}/check-version.sh
