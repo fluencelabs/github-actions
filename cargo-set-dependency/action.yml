@@ -43,12 +43,13 @@ runs:
       shell: bash
       run: |
         # Fail if more than one source found
-        LOCK_SOURCE=$(dasel -f Cargo.lock -p toml 'package.(name=${{ inputs.package }}).source' -m)
-        if (( $(echo $LOCK_SOURCE | wc -l) > 1 )); then
+        LOCK_SOURCE="$(dasel -f Cargo.lock -p toml 'package.(name=${{ inputs.package }}).source' -m)"
+        echo "$LOCK_SOURCE"
+        if (( $(echo "$LOCK_SOURCE" | wc -l) > 1 )); then
           cat <<-ERROR
-          More than one source found.
-          ${{ inputs.package }} should be set in root Cargo.toml file for all
-          workspace members with "[workspace.dependencies]".
+        More than one source found.
+        ${{ inputs.package }} should be set in root Cargo.toml file for all
+        workspace members with "[workspace.dependencies]".
         ERROR
           exit 1
         fi
