@@ -9,6 +9,10 @@ inputs:
   version:
     description: "Dependency version"
     required: true
+  check:
+    description: "Check that dependency is set in Cargo.lock"
+    type: boolean
+    default: true
 
 runs:
   using: composite
@@ -34,12 +38,14 @@ runs:
         sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
 
     - name: Update Cargo.lock
+      if: inputs.check == true
       shell: bash
       env:
         CARGO_UNSTABLE_SPARSE_REGISTRY: true
       run: cargo update -p ${{ inputs.package }}
 
     - name: Fail if more than one source found
+      if: inputs.check == true
       shell: bash
       run: |
         # Fail if more than one source found
@@ -55,6 +61,7 @@ runs:
         fi
 
     - name: Parse Cargo.lock and prepare variables
+      if: inputs.check == true
       shell: bash
       run: |
         # Parce Cargo.lock and prepare variables
@@ -64,6 +71,7 @@ runs:
         echo "GIT=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -w plain '.git' 2>/dev/null)" >> $GITHUB_ENV
 
     - name: Check that ${{ inputs.package }} source found in Cargo.lock matches input
+      if: inputs.check == true
       shell: bash
       run: |
         # Check that ${{ inputs.package }} source found in Cargo.lock matches input
