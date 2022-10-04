@@ -1,0 +1,11 @@
+{
+  "fluence-app-service": {
+    "git": "https://github.com/fluencelabs/marine",
+    "branch": "master",
+    "features": ["raw-module-api"]
+  },
+  "avm-server": {
+    "git": "https://github.com/fluencelabs/aquavm",
+    "branch": "master"
+  }
+}
