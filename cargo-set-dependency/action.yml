@@ -30,8 +30,7 @@ runs:
       run: |
         # Set ${{ inputs.package }} version
         version=$(echo '${{ steps.version.outputs.json }}' | dasel -p json -w toml)
-        version="{ ${version//$'\n'/, } }"
-        sed -i "s#${{ inputs.package }} = .*#${{ inputs.package }} = \\${version}#g" Cargo.toml
+        ${{ github.action_path }}/set-version.sh ${{ inputs.package }} "${version}"
 
     - name: Update Cargo.lock
       shell: bash
@@ -48,8 +47,6 @@ runs:
         if (( $(echo "$LOCK_SOURCE" | wc -l) > 1 )); then
           cat <<-ERROR
         More than one source found.
-        ${{ inputs.package }} should be set in root Cargo.toml file for all
-        workspace members with "[workspace.dependencies]".
         ERROR
           exit 1
         fi
