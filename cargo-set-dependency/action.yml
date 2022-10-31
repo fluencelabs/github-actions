@@ -23,7 +23,7 @@ runs:
       run: |
         # Print ${{ inputs.package }} version
         echo '${{ inputs.version }}' | dasel -p json --color
-        echo "::set-output name=json::$(echo '${{ inputs.version }}' | dasel -p json -c)"
+        echo "json=$(echo '${{ inputs.version }}' | dasel -p json -c)" >> $GITHUB_OUTPUT
 
     - name: Set ${{ inputs.package }} version
       shell: bash
