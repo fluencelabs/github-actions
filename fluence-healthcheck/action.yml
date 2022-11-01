@@ -44,4 +44,4 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         # Check connectivity to ${{ inputs.target }}
-        ./check.sh
+        ./check.sh ${{ inputs.target }} ${{ inputs.script }} ${{ inputs.function }}
