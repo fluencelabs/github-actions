@@ -21,9 +21,11 @@ runs:
       with:
         node-version: "16"
         cache: "npm"
+        cache-dependency-path: ${{ github.action_path }}/package.lock
 
     - name: Install aqua
       shell: bash
+      working-directory: ${{ github.action_path }}
       run: |
         # Install aqua
         npm install
@@ -31,6 +33,7 @@ runs:
     - name: Check connectivity to ${{ inputs.target }}
       id: check
       shell: bash
+      working-directory: ${{ github.action_path }}
       run: |
         # Check connectivity to ${{ inputs.target }}
-        ${{ github.action_path }}/check.sh
+        ./check.sh
