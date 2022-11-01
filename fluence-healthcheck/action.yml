@@ -34,4 +34,4 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         # Check connectivity to ${{ inputs.target }}
-        ./check.sh ${{ inputs.target }} ${{ github.action_path }}/heathcheck.aqua
+        ./check.sh ${{ inputs.target }} ${{ github.action_path }}/healthcheck.aqua

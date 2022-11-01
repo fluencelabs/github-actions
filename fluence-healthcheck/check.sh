@@ -24,6 +24,10 @@ esac
 
 if [[ -f log.txt ]]; then
   echo "Failure occured, check the log"
-  echo "log=$(cat log.txt)" >> $GITHUB_OUTPUT
+  LOG="$(cat log)"
+  LOG="${LOG//'%'/'%25'}"
+  LOG="${LOG//$'\n'/'%0A'}"
+  LOG="${LOG//$'\r'/'%0D'}"
+  echo "log=${LOG}" >> $GITHUB_OUTPUT
   exit 1
 fi
