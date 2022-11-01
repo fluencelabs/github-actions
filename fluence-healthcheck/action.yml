@@ -6,6 +6,12 @@ inputs:
   target:
     description: "Fluence environment (stage, testnet or krasnodar) or peer multiaddr."
     default: "krasnodar"
+  script:
+    description: "Path to aqua script to run."
+    default: "${{ github.action_path }}/heathcheck.aqua"
+  function:
+    description: "Function to run."
+    default: "check_connection()"
 
 outputs:
   log:

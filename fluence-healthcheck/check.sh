@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 check_connection() {
-  if ! result=$(npx aqua run --addr $1 -f 'check_connection()' --input healthcheck.aqua 2>&1); then
+  if ! result=$(npx aqua run --addr $1 -f $INPUTS_FUNCTION --input $INPUTS_SCRIPT 2>&1); then
     echo $result | tee -a log.txt
   fi
 }
