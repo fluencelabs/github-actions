@@ -6,12 +6,6 @@ inputs:
   target:
     description: "Fluence environment (stage, testnet or krasnodar) or peer multiaddr."
     default: "krasnodar"
-  script:
-    description: "Path to aqua script to run."
-    default: "${{ github.action_path }}/heathcheck.aqua"
-  function:
-    description: "Function to run."
-    default: "'check_connection()'"
 
 outputs:
   log:
@@ -40,4 +34,4 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         # Check connectivity to ${{ inputs.target }}
-        ./check.sh ${{ inputs.target }} ${{ inputs.script }} ${{ inputs.function }}
+        ./check.sh ${{ inputs.target }} ${{ github.action_path }}/heathcheck.aqua

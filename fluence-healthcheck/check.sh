@@ -2,16 +2,15 @@
 
 INPUTS_TARGET="$1"
 INPUTS_SCRIPT="$2"
-INPUTS_FUNCTION="$3"
 
 check_connection() {
-  if ! result=$(npx aqua run --addr $1 -f $INPUTS_FUNCTION --input $INPUTS_SCRIPT 2>&1); then
+  if ! result=$(npx aqua run --addr $1 -f 'check_connection()' --input $INPUTS_SCRIPT 2>&1); then
     echo $result | tee -a log.txt
   fi
 }
 
 get_peers() {
-  npx aqua default_peers $1
+  npx aqua config default_peers $1
 }
 
 case $INPUTS_TARGET in
