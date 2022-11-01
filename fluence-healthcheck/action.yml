@@ -11,7 +11,7 @@ inputs:
     default: "${{ github.action_path }}/heathcheck.aqua"
   function:
     description: "Function to run."
-    default: "check_connection()"
+    default: "'check_connection()'"
 
 outputs:
   log:
