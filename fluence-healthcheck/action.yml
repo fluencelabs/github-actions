@@ -34,10 +34,6 @@ runs:
         # Install aqua
         npm install --no-audit --no-fund --silent
 
-    - name: Check env
-      shell: bash
-      run: env
-
     - name: Check connectivity to ${{ inputs.target }}
       id: check
       shell: bash
