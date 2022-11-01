@@ -1,0 +1,25 @@
+name: Test fluence-healthcheck
+
+on:
+  pull_request:
+    paths:
+      - "fluence-healthcheck/**"
+      - ".github/workflows/fluence-healthcheck-ci.yml"
+      - "!**.md"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  healthcheck:
+    name: "connectivity - stage"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run check
+        uses: ./fluence-healthcheck
+        with:
+          target: stage
