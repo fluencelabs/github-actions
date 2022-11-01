@@ -32,7 +32,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         # Install aqua
-        npm install
+        npm install --no-audit --no-fund --silent
 
     - name: Check connectivity to ${{ inputs.target }}
       id: check
