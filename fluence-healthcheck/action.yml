@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: |
         # Install aqua
-        npm install @fluencelabs/aqua@nightly
+        npm install
 
     - name: Check connectivity to ${{ inputs.target }}
       id: check
