@@ -1,0 +1,36 @@
+name: Check connectivity to Fluence peer
+description: |
+  Check connectivity to Fluence peer or peers
+
+inputs:
+  target:
+    description: "Fluence environment (stage, testnet or krasnodar) or peer multiaddr."
+    default: "krasnodar"
+
+outputs:
+  log:
+    description: "aqua script log"
+    value: ${{ steps.check.outputs.log }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: "16"
+        cache: "npm"
+
+    - name: Install aqua
+      shell: bash
+      run: |
+        # Install aqua
+        npm install @fluencelabs/aqua@nightly
+
+    - name: Check connectivity to ${{ inputs.target }}
+      id: check
+      shell: bash
+      run: |
+        # Check connectivity to ${{ inputs.target }}
+        ${{ github.action_path }}/check.sh
