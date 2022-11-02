@@ -27,7 +27,7 @@ runs:
       shell: bash
       run: |
         # Override dependencies
-        python ${{ github.action_path }}/cargo-set-dependencies.py
+        python ${{ github.action_path }}/cargo-set-dependency.py
 
     - name: Update Cargo.lock
       shell: bash
