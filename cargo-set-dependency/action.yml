@@ -27,7 +27,7 @@ runs:
       shell: bash
       run: |
         # Install python dependencies
-        python -m pip install -r ${{ github.actions_path }}/requirements.txt
+        python -m pip install -r ${{ github.action_path }}/requirements.txt
 
     - name: Override dependencies
       shell: bash
