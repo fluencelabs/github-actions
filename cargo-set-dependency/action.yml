@@ -15,8 +15,8 @@ runs:
       shell: bash
       run: |
         # Print dependencies
-        echo "${{ inputs.dependencies }}" | jq
-        echo "${{ inputs.dependencies }}" | jq -c > input.json
+        echo '${{ inputs.dependencies }}' | jq
+        echo '${{ inputs.dependencies }}' | jq -c > input.json
 
     - name: Setup pytho
       uses: actions/setup-python@v4
