@@ -21,8 +21,8 @@ for dep in input:
     package=dep.pop("package")
     manifest_path=dep.pop("manifest", "Cargo.toml")
 
-    cargo_toml = toml.load(manifest_path)
-    cargo_toml = replace_nested_key(cargo_toml, package, dep)
+    manifest = toml.load(manifest_path)
+    manifest = replace_nested_key(manifest, package, dep)
 
-    with open(manifest_path, "w") as manifest:
-        manifest.write(toml.dumps(cargo_toml))
+    with open(manifest_path, "w") as f:
+        f.write(toml.dumps(manifest))
