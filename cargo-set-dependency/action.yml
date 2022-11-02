@@ -15,11 +15,13 @@ runs:
       shell: bash
       run: |
         # Print dependencies
-        echo '${{ inputs.dependencies }}' | jq
+        echo '${{ inputs.dependencies }}' | jq -C
         echo '${{ inputs.dependencies }}' | jq -c > input.json
 
     - name: Setup pytho
       uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
 
     - name: Override dependencies
       shell: bash
