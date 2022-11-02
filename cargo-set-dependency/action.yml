@@ -23,6 +23,12 @@ runs:
       with:
         python-version: "3.x"
 
+    - name: Install python dependencies
+      shell: bash
+      run: |
+        # Install python dependencies
+        python -m pip install -r ${{ github.actions_path }}/requirements.txt
+
     - name: Override dependencies
       shell: bash
       run: |
