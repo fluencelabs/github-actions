@@ -41,5 +41,5 @@ runs:
         CARGO_UNSTABLE_SPARSE_REGISTRY: true
       run: |
         # Update Cargo.lock
-        packages=$(cat test.json | jq -rc '.[].package |= "-p " + . | .[].package')
+        packages=$(cat input.json | jq -rc '.[].package |= "-p " + . | .[].package')
         cargo update $packages
