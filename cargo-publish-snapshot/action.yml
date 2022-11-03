@@ -37,6 +37,7 @@ runs:
           --force '*' \
           --no-git-commit \
           --exact \
+          --all \
           -y prerelease
 
     - name: Prepare for publishing
