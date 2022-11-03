@@ -59,3 +59,4 @@ runs:
         cat <<VERSIONS >> $GITHUB_STEP_SUMMARY
         | ${package} | $(dasel -f Cargo.lock -p toml "package.(name=${package}).version -m")
         VERSIONS
+        done < <(cat input.json | jq -rc '.[].package')
