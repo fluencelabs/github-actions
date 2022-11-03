@@ -45,7 +45,6 @@ runs:
         cargo update $packages
 
     - name: Setup dasel
-      shell: bash
       uses: allejo/setup-dasel@v1
 
     - name: Print results to check summary
