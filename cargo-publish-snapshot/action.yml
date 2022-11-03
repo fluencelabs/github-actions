@@ -1,0 +1,83 @@
+name: Publish cargo snapshots
+description: |
+  Publish cargo workflow snapshots to fluence registry
+
+outputs:
+  version:
+    description: "Version of published snapshots"
+    value: "${{ steps.version.outputs.version }}"
+
+runs:
+  using: composite
+  steps:
+    - name: Install cargo-workspaces
+      uses: baptiste0928/cargo-install@v1.3.0
+      with:
+        crate: cargo-workspaces
+
+    - name: Prepare variables
+      shell: bash
+      id: prepare
+      run: |
+        # Prepare variables
+        SHA=${{ github.event.pull_request.head.sha }}
+        SHA="${SHA::7}"
+        echo "sha=${SHA}" >> $GITHUB_OUTPUT
+
+        BRANCH="${GITHUB_HEAD_REF//[^a-zA-Z0-9-]/-}"
+        echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+
+        echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
+
+    - name: Set version to snapshot version
+      shell: bash
+      run: |
+        cargo workspaces version \
+          --pre-id "${ID}" \
+          --force '*' \
+          --no-git-commit \
+          --exact \
+          -y prerelease
+
+    - name: Prepare for publishing
+      shell: bash
+      run: |
+        # Prepare for publishing
+        # set registry to "fluence"
+        # workaround for https://github.com/pksunkara/cargo-workspaces/issues/79
+        cargo workspaces exec bash -c 'grep -q "publish = false" Cargo.toml || sed -i "/\[package\]/a publish = [\"fluence\"]" Cargo.toml'
+
+        # set workspace dependencies registry to "fluence"
+        while read -r crate; do
+          cargo workspaces exec sed -i "s/$crate =\s{\s\(.*\)\s}/$crate = { \1, registry = \"fluence\" }/g" Cargo.toml
+        done < <(cargo workspaces list)
+
+    - name: Publish snapshot to selfhosted registry
+      shell: bash
+      run: |
+        # Publish snapshot to selfhosted registry
+        cargo workspaces publish \
+          --registry fluence \
+          --no-git-commit \
+          --from-git \
+          --allow-dirty \
+          -y prerelease
+
+    - name: Get final snapshot version
+      id: version
+      run: |
+        # Get final snapshot version
+        version=$(cargo metadata --no-deps --format-version 1 | jq -r ".workspace_members[0]" | cut -d ' ' -f 2)
+        echo "version=${version}" >> $GITHUB_OUTPUT
+
+    - name: Print results to check summary
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        # Print results to check summary
+        echo "## Cargo snapshots" >> $GITHUB_STEP_SUMMARY
+        while read -r crate; do
+        cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
+        - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
+        SNAPSHOT
+        done < <(cargo workspaces list)
