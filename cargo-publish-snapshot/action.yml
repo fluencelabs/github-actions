@@ -12,6 +12,9 @@ outputs:
   version:
     description: "Version of published snapshots"
     value: "${{ steps.version.outputs.version }}"
+  branch:
+    description: "Sanitized branch name"
+    value: "${{ steps.prepare.outputs.branch }}"
 
 runs:
   using: composite
