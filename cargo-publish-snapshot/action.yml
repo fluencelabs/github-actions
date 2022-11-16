@@ -1,6 +1,6 @@
-name: Publish cargo snapshots
+name: Publish crates snapshots
 description: |
-  Publish cargo workflow snapshots to fluence registry
+  Publish crates snapshots to fluence registry
 
 outputs:
   version:
@@ -30,9 +30,10 @@ runs:
 
         echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
-    - name: Set version to snapshot version
+    - name: Set version to snapshot
       shell: bash
       run: |
+        # Set version to snapshot
         cargo workspaces version \
           --pre-id "${ID}" \
           --force '*' \
@@ -63,10 +64,10 @@ runs:
         # set workspace dependencies registry to "fluence"
         cargo workspaces exec ${{ github.action_path }}/cargo-set-registry.py $(cargo workspaces list)
 
-    - name: Publish snapshot to selfhosted registry
+    - name: Publish snapshots to selfhosted registry
       shell: bash
       run: |
-        # Publish snapshot to selfhosted registry
+        # Publish snapshots to selfhosted registry
         cargo workspaces publish \
           --registry fluence \
           --no-git-commit \
@@ -89,7 +90,7 @@ runs:
         VERSION: ${{ steps.version.outputs.version }}
       run: |
         # Print results to check summary
-        echo "## Cargo snapshots" >> $GITHUB_STEP_SUMMARY
+        echo "## Snapshots" >> $GITHUB_STEP_SUMMARY
         while read -r crate; do
         cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
         - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
