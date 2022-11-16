@@ -1,13 +1,20 @@
 # How to use
 
 ```yaml
-- name: Set fluence-app-service version
+- name: Override dependencies version
   uses: fluencelabs/github-actions/cargo-set-dependency@main
   with:
-    package: fluence-app-service
-    version: |
+    dependencies: |
+      [
         {
+          "package": "fluence-app-service",
+          "version": "0.22.1",
+        },
+        {
+          "package": "marine-runtime",
+          "manifest": "avm/server/Cargo.toml", # path to Cargo.toml file to change
           "version": "=0.22.1",
           "registry": "fluence"
         }
+      ]
 ```

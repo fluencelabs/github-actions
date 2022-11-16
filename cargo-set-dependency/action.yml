@@ -1,6 +1,6 @@
-name: Set cargo dependencies version
+name: Set dependencies version in cargo project
 description: |
-  Sets cargo dependencies version in Cargo.toml
+  Sets dependencies version in Cargo.toml
 
 inputs:
   dependencies:
@@ -18,7 +18,7 @@ runs:
         echo '${{ inputs.dependencies }}' | jq -C
         echo '${{ inputs.dependencies }}' | jq -c > input.json
 
-    - name: Setup pytho
+    - name: Setup python
       uses: actions/setup-python@v4
       with:
         python-version: "3.x"
