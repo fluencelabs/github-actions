@@ -29,17 +29,6 @@ runs:
 
         echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
-    - name: Set version to snapshot version
-      shell: bash
-      run: |
-        cargo workspaces version \
-          --pre-id "${ID}" \
-          --force '*' \
-          --no-git-commit \
-          --exact \
-          --all \
-          -y prerelease
-
     - name: Prepare for publishing
       shell: bash
       run: |
@@ -52,6 +41,17 @@ runs:
         while read -r crate; do
           cargo workspaces exec sed -i "s/$crate =\s{\s\(.*\)\s}/$crate = { \1, registry = \"fluence\" }/g" Cargo.toml
         done < <(cargo workspaces list)
+
+    - name: Set version to snapshot version
+      shell: bash
+      run: |
+        cargo workspaces version \
+          --pre-id "${ID}" \
+          --force '*' \
+          --no-git-commit \
+          --exact \
+          --all \
+          -y prerelease
 
     - name: Publish snapshot to selfhosted registry
       shell: bash
