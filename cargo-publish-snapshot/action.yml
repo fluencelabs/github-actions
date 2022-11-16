@@ -15,6 +15,11 @@ runs:
       with:
         crate: cargo-workspaces
 
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
     - name: Prepare variables
       shell: bash
       id: prepare
@@ -29,19 +34,6 @@ runs:
 
         echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
 
-    - name: Prepare for publishing
-      shell: bash
-      run: |
-        # Prepare for publishing
-        # set registry to "fluence"
-        # workaround for https://github.com/pksunkara/cargo-workspaces/issues/79
-        cargo workspaces exec bash -c 'grep -q "publish = false" Cargo.toml || sed -i "/\[package\]/a publish = [\"fluence\"]" Cargo.toml'
-
-        # set workspace dependencies registry to "fluence"
-        while read -r crate; do
-          cargo workspaces exec sed -i "s/$crate =\s{\s\(.*\)\s}/$crate = { \1, registry = \"fluence\" }/g" Cargo.toml
-        done < <(cargo workspaces list)
-
     - name: Set version to snapshot version
       shell: bash
       run: |
@@ -52,6 +44,17 @@ runs:
           --exact \
           --all \
           -y prerelease
+
+    - name: Prepare for publishing
+      shell: bash
+      run: |
+        # Prepare for publishing
+        # set registry to "fluence"
+        # workaround for https://github.com/pksunkara/cargo-workspaces/issues/79
+        cargo workspaces exec bash -c 'grep -q "publish = false" Cargo.toml || sed -i "/\[package\]/a publish = [\"fluence\"]" Cargo.toml'
+
+        # set workspace dependencies registry to "fluence"
+        cargo workspaces exec ${{ github.action_path }}/cargo-set-registry.py $(cargo workspaces list)
 
     - name: Publish snapshot to selfhosted registry
       shell: bash
