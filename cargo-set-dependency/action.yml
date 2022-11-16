@@ -50,6 +50,7 @@ runs:
     - name: Print results to check summary
       shell: bash
       run: |
+        # Print result to check summary
         cat <<TABLE >> $GITHUB_STEP_SUMMARY
         ## Used versions
         | name | version |
