@@ -1,0 +1,98 @@
+name: Publish crates snapshots
+description: |
+  Publish crates snapshots to fluence registry
+
+outputs:
+  version:
+    description: "Version of published snapshots"
+    value: "${{ steps.version.outputs.version }}"
+
+runs:
+  using: composite
+  steps:
+    - name: Install cargo-workspaces
+      uses: baptiste0928/cargo-install@v1.3.0
+      with:
+        crate: cargo-workspaces
+        version: 0.2.35
+
+    - name: Prepare variables
+      shell: bash
+      id: prepare
+      run: |
+        # Prepare variables
+        SHA=${{ github.event.pull_request.head.sha }}
+        SHA="${SHA::7}"
+        echo "sha=${SHA}" >> $GITHUB_OUTPUT
+
+        BRANCH="${GITHUB_HEAD_REF//[^a-zA-Z0-9-]/-}"
+        echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+
+        echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
+
+    - name: Set version to snapshot
+      shell: bash
+      run: |
+        # Set version to snapshot
+        cargo workspaces version \
+          --pre-id "${ID}" \
+          --force '*' \
+          --no-git-commit \
+          --exact \
+          --all \
+          -y prerelease
+
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Install python dependencies
+      shell: bash
+      run: |
+        # Install python dependencies
+        python -m pip install -r ${{ github.action_path }}/requirements.txt
+
+    - name: Prepare for publishing
+      shell: bash
+      run: |
+        # Prepare for publishing
+        # set registry to "fluence"
+        # workaround for https://github.com/pksunkara/cargo-workspaces/issues/79
+        cargo workspaces exec bash -c 'grep -q "publish = false" Cargo.toml || sed -i "/\[package\]/a publish = [\"fluence\"]" Cargo.toml'
+
+        # set workspace dependencies registry to "fluence"
+        cargo workspaces exec ${{ github.action_path }}/cargo-set-registry.py $(cargo workspaces list)
+
+    - name: Publish snapshots to selfhosted registry
+      shell: bash
+      run: |
+        # Publish snapshots to selfhosted registry
+        cargo workspaces publish \
+          --registry fluence \
+          --no-git-commit \
+          --from-git \
+          --allow-dirty \
+          --no-verify \
+          -y prerelease
+
+    - name: Get final snapshot version
+      id: version
+      shell: bash
+      run: |
+        # Get final snapshot version
+        version=$(cargo metadata --no-deps --format-version 1 | jq -r ".workspace_members[0]" | cut -d ' ' -f 2)
+        echo "version=${version}" >> $GITHUB_OUTPUT
+
+    - name: Print results to check summary
+      shell: bash
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        # Print results to check summary
+        echo "## Snapshots" >> $GITHUB_STEP_SUMMARY
+        while read -r crate; do
+        cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
+        - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
+        SNAPSHOT
+        done < <(cargo workspaces list)
