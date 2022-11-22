@@ -103,6 +103,7 @@ runs:
         echo "version=${version}" >> $GITHUB_OUTPUT
 
     - name: Print results to check summary
+      if: inputs.publish == 'true'
       shell: bash
       env:
         VERSION: ${{ steps.version.outputs.version }}
