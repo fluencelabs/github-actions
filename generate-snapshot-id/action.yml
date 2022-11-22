@@ -20,9 +20,9 @@ runs:
       shell: bash
       id: id
       run: |
-        echo ${{ github.event }}
+        echo ${{ github.event_name }}
         # Prepare id
-        case ${{ github.event }} in
+        case ${{ github.event_name }} in
           pull_request)
             SHA=${{ github.event.pull_request.head.sha }}
             BRANCH=${{ github.event.pull_request.head.ref }}
