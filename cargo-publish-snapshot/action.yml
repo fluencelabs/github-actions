@@ -92,7 +92,11 @@ runs:
             --no-verify \
             -y prerelease
 
-          ((RETRY--))
+          if ((?)); then
+            break
+          else
+            ((RETRY--))
+          fi
         done
 
     - name: Get final snapshot version
