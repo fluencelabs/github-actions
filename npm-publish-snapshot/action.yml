@@ -33,6 +33,7 @@ runs:
     - name: Set package version
       id: version
       working-directory: ${{ inputs.working-directory }}
+      shell: bash
       run: |
         # Set package vesion
         echo "version=$(npm version prerelease --no-git-tag-version --preid ${{ inputs.id }})" >> $GIHTUB_OUTPUTS
