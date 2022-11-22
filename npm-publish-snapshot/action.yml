@@ -50,7 +50,6 @@ runs:
       run: npm publish --tag snapshot --registry https://npm.fluence.dev
 
     - name: Print results to check summary
-      if: inputs.publish == 'true'
       shell: bash
       env:
         VERSION: ${{ steps.version.outputs.version }}
