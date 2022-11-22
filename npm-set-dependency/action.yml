@@ -23,4 +23,4 @@ runs:
     - name: Override dependency
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
-      run: npm install -E ${{ inputs.package }}@${{ inputs.version }}
+      run: npm install --save -E ${{ inputs.package }}@${{ inputs.version }}
