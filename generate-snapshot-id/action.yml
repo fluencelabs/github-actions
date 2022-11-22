@@ -1,0 +1,44 @@
+name: Generate snapshot id
+description: |
+  Generate snapshot id
+
+outputs:
+  sha:
+    description: "Short sha"
+    value: "${{ steps.id.outputs.sha }}"
+  branch:
+    description: "Sanitized branch name"
+    value: "${{ steps.id.outputs.branch }}"
+  id:
+    description: "Snapshot id"
+    value: "${{ steps.id.outputs.id }}"
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare id
+      shell: bash
+      id: id
+      run: |
+        # Prepare id
+        case ${{ github.event_name }} in
+          pull_request)
+            SHA=${{ github.event.pull_request.head.sha }}
+            BRANCH=${{ github.event.pull_request.head.ref }}
+          ;;
+          push)
+            SHA=${{ github.sha }}
+            BRANCH=${{ github.ref }}
+          ;;
+          *)
+            echo "Unsupported even type: ${{ github.event_name }}"
+            exit 1
+        esac
+
+        SHA="${SHA::7}"
+        echo "sha=${SHA}" >> $GITHUB_OUTPUT
+
+        BRANCH="${BRANCH//[^a-zA-Z0-9-]/-}"
+        echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+
+        echo "id=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
