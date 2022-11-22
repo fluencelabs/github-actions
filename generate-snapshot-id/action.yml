@@ -20,6 +20,7 @@ runs:
       shell: bash
       id: id
       run: |
+        echo ${{ github.event }}
         # Prepare id
         case ${{ github.event }} in
           pull_request)
