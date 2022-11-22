@@ -27,6 +27,7 @@ runs:
     - name: Check inputs
       shell: bash
       run: |
+        # Check inputs
         if [[ "${{ inputs.id }}" == "" ]]; then
           echo "id input is empty"
           exit 1
