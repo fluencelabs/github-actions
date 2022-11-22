@@ -78,15 +78,22 @@ runs:
     - name: Publish snapshots to selfhosted registry
       if: inputs.publish == 'true'
       shell: bash
+      env:
+        RETRY: 2
       run: |
         # Publish snapshots to selfhosted registry
-        cargo workspaces publish \
-          --registry fluence \
-          --no-git-commit \
-          --from-git \
-          --allow-dirty \
-          --no-verify \
-          -y prerelease
+        while ((RETRY)); do
+          echo "Publish try: ${RETRY}"
+          cargo workspaces publish \
+            --registry fluence \
+            --no-git-commit \
+            --from-git \
+            --allow-dirty \
+            --no-verify \
+            -y prerelease
+
+          ((RETRY--))
+        done
 
     - name: Get final snapshot version
       id: version
