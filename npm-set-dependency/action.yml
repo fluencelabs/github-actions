@@ -15,6 +15,10 @@ inputs:
     description: "Working directory"
     type: string
     default: "${{ github.workspace }}"
+  flags:
+    description: "Flags to pass to npm"
+    type: string
+    default: "--save"
 
 runs:
   using: composite
@@ -23,4 +27,4 @@ runs:
     - name: Override dependency
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
-      run: npm install --save -E ${{ inputs.package }}@${{ inputs.version }}
+      run: npm install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}

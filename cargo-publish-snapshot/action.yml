@@ -7,6 +7,10 @@ inputs:
     description: "Publish snapshots"
     type: bool
     default: true
+  id:
+    description: "Snapshot id"
+    type: string
+    required: true
 
 outputs:
   version:
@@ -19,32 +23,27 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Check inputs
+      shell: bash
+      run: |
+        # Check inputs
+        if [[ "${{ inputs.id }}" == "" ]]; then
+          echo "id input is empty"
+          exit 1
+        fi
+
     - name: Install cargo-workspaces
       uses: baptiste0928/cargo-install@v1.3.0
       with:
         crate: cargo-workspaces
         version: 0.2.35
 
-    - name: Prepare variables
-      shell: bash
-      id: prepare
-      run: |
-        # Prepare variables
-        SHA=${{ github.event.pull_request.head.sha }}
-        SHA="${SHA::7}"
-        echo "sha=${SHA}" >> $GITHUB_OUTPUT
-
-        BRANCH="${GITHUB_HEAD_REF//[^a-zA-Z0-9-]/-}"
-        echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
-
-        echo "ID=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_ENV
-
     - name: Set version to snapshot
       shell: bash
       run: |
         # Set version to snapshot
         cargo workspaces version \
-          --pre-id "${ID}" \
+          --pre-id "${{ inputs.id }}" \
           --force '*' \
           --no-git-commit \
           --exact \
@@ -79,15 +78,21 @@ runs:
     - name: Publish snapshots to selfhosted registry
       if: inputs.publish == 'true'
       shell: bash
+      env:
+        RETRY: 2
       run: |
         # Publish snapshots to selfhosted registry
-        cargo workspaces publish \
-          --registry fluence \
-          --no-git-commit \
-          --from-git \
-          --allow-dirty \
-          --no-verify \
-          -y prerelease
+        while ((RETRY)); do
+          cargo workspaces publish \
+            --registry fluence \
+            --no-git-commit \
+            --from-git \
+            --allow-dirty \
+            --no-verify \
+            -y prerelease
+
+          ((RETRY--))
+        done
 
     - name: Get final snapshot version
       id: version
@@ -98,13 +103,12 @@ runs:
         echo "version=${version}" >> $GITHUB_OUTPUT
 
     - name: Print results to check summary
-      if: inputs.publish == 'true'
       shell: bash
       env:
         VERSION: ${{ steps.version.outputs.version }}
       run: |
         # Print results to check summary
-        echo "## Snapshots" >> $GITHUB_STEP_SUMMARY
+        echo "## cargo snapshots" >> $GITHUB_STEP_SUMMARY
         while read -r crate; do
         cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
         - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
