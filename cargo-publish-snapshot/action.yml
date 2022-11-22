@@ -83,7 +83,6 @@ runs:
       run: |
         # Publish snapshots to selfhosted registry
         while ((RETRY)); do
-          echo "Publish try: ${RETRY}"
           cargo workspaces publish \
             --registry fluence \
             --no-git-commit \
@@ -92,11 +91,7 @@ runs:
             --no-verify \
             -y prerelease
 
-          if ((?)); then
-            break
-          else
-            ((RETRY--))
-          fi
+          ((RETRY--))
         done
 
     - name: Get final snapshot version
