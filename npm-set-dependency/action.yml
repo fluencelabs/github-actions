@@ -31,9 +31,9 @@ runs:
         # Override dependency
         npm install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
 
-      - name: Setup dasel
-        if: always()
-        uses: allejo/setup-dasel@e40b64a6fd36df95cedd8266da9e585996934181
+    - name: Setup dasel
+      if: always()
+      uses: allejo/setup-dasel@e40b64a6fd36df95cedd8266da9e585996934181
 
     - name: Check that dependency is set in package-lock.json
       shell: bash
