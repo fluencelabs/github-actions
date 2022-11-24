@@ -27,4 +27,24 @@ runs:
     - name: Override dependency
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
-      run: npm install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
+      run: |
+        # Override dependency
+        npm install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
+
+      - name: Setup dasel
+        if: always()
+        uses: allejo/setup-dasel@e40b64a6fd36df95cedd8266da9e585996934181
+
+    - name: Check that dependency is set in package-lock.json
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+      run: |
+        # Chech that dependency is set in package-lock.json
+        version="$(dasel -f package-lock.json -p json -m --plain 'packages.(?:-=node_modules/${{ inputs.package }}).version')
+        if [[ $version != ${{ inputs.version }} ]]; then
+          cat <<ERROR
+          ${{ inputs.package }} override unsucessful.
+          ${version} in package-lock.json is not the same as provided version ${{ inputs.version }}
+          ERROR
+          exit 1
+        fi
