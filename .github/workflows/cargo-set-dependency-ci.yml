@@ -50,9 +50,8 @@ jobs:
           dependencies: |
             [
               {
-                "package": "marine-runtime",
-                "git": "https://github.com/fluencelabs/marine",
-                "branch": "master"
+                "package": "avm-server",
+                "version": "=0.27.0",
               },
               {
                 "package": "fluence-app-service",
