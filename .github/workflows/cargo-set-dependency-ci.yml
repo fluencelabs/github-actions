@@ -55,7 +55,7 @@ jobs:
               },
               {
                 "package": "fluence-app-service",
-                "version": "=0.22.1",
+                "version": "=0.23.1",
                 "features": ["raw-module-api"]
               }
             ]
