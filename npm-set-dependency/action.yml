@@ -46,7 +46,7 @@ runs:
         version="$(dasel -f package-lock.json -p json -m --plain 'packages.(?:-=node_modules/${{ inputs.package }}).version')"
         if [[ ${version} != ${{ inputs.version }} ]]; then
         cat <<ERROR
-        ${{ inputs.package }} override unsucessful.
+        ${{ inputs.package }} override unsuccessful.
         ${version} in package-lock.json is not the same as provided version ${{ inputs.version }}
         ERROR
         exit 1
