@@ -26,9 +26,9 @@ runs:
             SHA=${{ github.event.pull_request.head.sha }}
             BRANCH=${{ github.event.pull_request.head.ref }}
           ;;
-          push)
+          push|workflow_dispatch)
             SHA=${{ github.sha }}
-            BRANCH=${{ github.ref }}
+            BRANCH=${GITHUB_REF#refs/*/}
           ;;
           *)
             echo "Unsupported even type: ${{ github.event_name }}"
