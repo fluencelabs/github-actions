@@ -50,10 +50,6 @@ jobs:
           dependencies: |
             [
               {
-                "package": "avm-server",
-                "version": "=0.27.0"
-              },
-              {
                 "package": "fluence-app-service",
                 "version": "=0.22.2",
                 "features": ["raw-module-api"]
