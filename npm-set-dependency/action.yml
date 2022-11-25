@@ -40,7 +40,7 @@ runs:
       run: |
         # Chech that dependency is set in package-lock.json
         version="$(dasel -f package-lock.json -p json -m --plain 'packages.(?:-=node_modules/${{ inputs.package }}).version')"
-        if [[ v${version} != ${{ inputs.version }} ]]; then
+        if [[ ${version} != ${{ inputs.version }} ]]; then
         cat <<ERROR
         ${{ inputs.package }} override unsucessful.
         ${version} in package-lock.json is not the same as provided version ${{ inputs.version }}
