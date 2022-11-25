@@ -47,7 +47,7 @@ runs:
         if [[ ${version} != ${{ inputs.version }} ]]; then
         cat <<ERROR
         ${{ inputs.package }} override unsuccessful.
-        ${version} in package-lock.json is not the same as provided version ${{ inputs.version }}
+        ${version} in package-lock.json is not the same as input version ${{ inputs.version }}
         ERROR
         exit 1
         fi
