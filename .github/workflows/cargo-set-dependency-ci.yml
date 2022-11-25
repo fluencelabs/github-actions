@@ -32,7 +32,6 @@ jobs:
 
           [dependencies]
           fluence-app-service = "0.20.0"
-          marine-runtime = "0.20.0"
           CARGO
 
       - name: Prepare cargo source
