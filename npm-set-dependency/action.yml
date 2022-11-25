@@ -15,6 +15,10 @@ inputs:
     description: "Working directory"
     type: string
     default: "${{ github.workspace }}"
+  package-manager:
+    description: "Package manager to use"
+    type: string
+    default: "npm"
   flags:
     description: "Flags to pass to npm"
     type: string
@@ -29,7 +33,7 @@ runs:
       working-directory: "${{ inputs.working-directory }}"
       run: |
         # Override dependency
-        npm install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
+        ${{ inputs.package-manager }} install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@e40b64a6fd36df95cedd8266da9e585996934181

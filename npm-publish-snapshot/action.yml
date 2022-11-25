@@ -15,6 +15,14 @@ inputs:
     description: "Snapshot id"
     type: string
     required: true
+  package-manager:
+    description: "Package manager to use"
+    type: string
+    default: "npm"
+  flags:
+    description: "Flags to pass to npm"
+    type: string
+    default: "--tag snapshot --registry https://npm.fluence.dev"
 
 outputs:
   version:
@@ -47,7 +55,7 @@ runs:
       if: inputs.publish == 'true'
       working-directory: ${{ inputs.working-directory }}
       shell: bash
-      run: npm publish --tag snapshot --registry https://npm.fluence.dev
+      run: ${{ inputs.package-manager }} publish ${{ inputs.flags }}
 
     - name: Print results to check summary
       shell: bash
