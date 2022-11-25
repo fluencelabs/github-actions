@@ -32,7 +32,6 @@ jobs:
 
           [dependencies]
           fluence-app-service = "0.20.0"
-          marine-runtime = "0.20.0"
           CARGO
 
       - name: Prepare cargo source
@@ -50,13 +49,8 @@ jobs:
           dependencies: |
             [
               {
-                "package": "marine-runtime",
-                "git": "https://github.com/fluencelabs/marine",
-                "branch": "master"
-              },
-              {
                 "package": "fluence-app-service",
-                "version": "=0.22.1",
+                "version": "=0.22.2",
                 "features": ["raw-module-api"]
               }
             ]

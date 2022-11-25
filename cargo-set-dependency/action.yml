@@ -47,6 +47,23 @@ runs:
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
 
+    - name: Check that dependency is set in Cargo.lock
+      shell: bash
+      run: |
+        # Chech that dependency is set in Cargo.lock
+        exit=0
+        while read -r package version; do
+          version_lock="$(dasel -f Cargo.lock -p toml -m --plain "package.(name=${package}).version")"
+          if ! [[ ${version} =~ ${version_lock} ]]; then
+        cat <<ERROR
+        ${package} override unsuccessful.
+        ${version_lock} in Cargo.lock is not the same as input version ${version}
+        ERROR
+          exit=1
+          fi
+        done < <(cat input.json | jq -rc '.[] | .package + " " + .version')
+        exit ${exit}
+
     - name: Print results to check summary
       shell: bash
       run: |
