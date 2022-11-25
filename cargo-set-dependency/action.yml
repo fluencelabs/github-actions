@@ -54,7 +54,7 @@ runs:
         exit=0
         while read -r package version; do
           version_lock="$(dasel -f Cargo.lock -p toml -m --plain "package.(name=${package}).version")"
-          if [[ ${version} !~ ${version_lock} ]]; then
+          if ! [[ ${version} =~ ${version_lock} ]]; then
         cat <<ERROR
         ${package} override unsuccessful.
         ${version_lock} in Cargo.lock is not the same as input version ${version}
