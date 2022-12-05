@@ -42,7 +42,8 @@ runs:
       run: |
         # Update Cargo.lock
         packages=$(cat input.json | jq -rc '.[].package |= "-p " + . | .[].package')
-        cargo update $packages
+        echo "Running cargo update ${packages}"
+        cargo update ${packages}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
