@@ -36,7 +36,7 @@ runs:
         ${{ inputs.package-manager }} install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Setup dasel
-      uses: allejo/setup-dasel@1
+      uses: allejo/setup-dasel@v1
       with:
         version: 1.27.3
 
