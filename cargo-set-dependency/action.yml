@@ -42,10 +42,12 @@ runs:
       run: |
         # Update Cargo.lock
         packages=$(cat input.json | jq -rc '.[].package |= "-p " + . | .[].package')
-        cargo update $packages
+        cargo update ${packages}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
+      with:
+        version: 1.27.3
 
     - name: Check that dependency is set in Cargo.lock
       shell: bash
