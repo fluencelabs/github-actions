@@ -115,3 +115,9 @@ runs:
         - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
         SNAPSHOT
         done < <(cargo workspaces list)
+        cat <<'ACCESS' >> $GITHUB_STEP_SUMMARY
+        echo "### Access to Fluence cargo registry" >> $GITHUB_STEP_SUMMARY
+        ```
+        cargo login --registry fluence $(vault read -filed=token kv/cargo-registry/users/dev)
+        ACCESS
+        ```

@@ -64,7 +64,12 @@ runs:
         NAME: ${{ steps.version.outputs.name }}
       run: |
         # Print results to check summary
-        echo "## npm snapshots" >> $GITHUB_STEP_SUMMARY
-        cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
+        cat <<'SNAPSHOT' >> $GITHUB_STEP_SUMMARY
+        ## npm snapshots
         - [${{ env.NAME }}@${{ env.VERSION }}](https://npm.fluence.dev/-/web/detail/${{ env.NAME }}/v/${{ env.VERSION }})
+        ### Access to Fluence npm registry
+        ```
+        vault read kv/npm-registry/basicauth/dev
+        npm login --registry npm.fluence.dev
+        ```
         SNAPSHOT
