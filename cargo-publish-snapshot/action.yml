@@ -119,5 +119,5 @@ runs:
         ### Access to Fluence cargo registry
         ```
         cargo login --registry fluence $(vault read -filed=token kv/cargo-registry/users/dev)
-        ACCESS
         ```
+        ACCESS
