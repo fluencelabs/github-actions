@@ -69,7 +69,7 @@ runs:
         - [${{ env.NAME }}@${{ env.VERSION }}](https://npm.fluence.dev/-/web/detail/${{ env.NAME }}/v/${{ env.VERSION }})
         ### Access to Fluence npm registry
         ```
-        vault read kv/npm-registry/basicauth/dev
+        vault read kv/basicauth/dev
         npm login --registry npm.fluence.dev
         ```
         SNAPSHOT
