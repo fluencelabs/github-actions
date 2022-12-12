@@ -116,7 +116,7 @@ runs:
         SNAPSHOT
         done < <(cargo workspaces list)
         cat <<'ACCESS' >> $GITHUB_STEP_SUMMARY
-        echo "### Access to Fluence cargo registry" >> $GITHUB_STEP_SUMMARY
+        ### Access to Fluence cargo registry
         ```
         cargo login --registry fluence $(vault read -filed=token kv/cargo-registry/users/dev)
         ACCESS
