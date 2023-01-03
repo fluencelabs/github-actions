@@ -5,6 +5,7 @@ INPUTS_SCRIPT="$2"
 
 check_connection() {
   if ! result=$(npx aqua run --addr $1 -f 'check_connection()' --input $INPUTS_SCRIPT 2>&1); then
+    echo "Checking $1" | tee -a log.txt
     echo $result | tee -a log.txt
   fi
 }
