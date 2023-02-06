@@ -38,6 +38,9 @@ runs:
         SHA="${SHA::7}"
         echo "sha=${SHA}" >> $GITHUB_OUTPUT
 
+        if [[ $BRANCH =~ release-please ]]; then
+          BRANCH=release-please
+        fi
         BRANCH="${BRANCH//[^a-zA-Z0-9-]/-}"
         echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
