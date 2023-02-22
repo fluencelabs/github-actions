@@ -48,8 +48,8 @@ runs:
         done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
         sed -i '$ s/.$//' snapshots.json
         echo '}' >> snapshots.json
-        jq snapshots.json
-        echo "snapshots=$(jq -c snapshots.json)" >> $GITHUB_OUTPUT
+        jq . snapshots.json
+        echo "snapshots=$(jq -c . snapshots.json)" >> $GITHUB_OUTPUT
         rm snapshots.json
 
     - name: Publish to self-hosted npm repo
