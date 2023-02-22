@@ -46,7 +46,7 @@ runs:
         EOF
           fi
         done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
-        sed '$ s/.$//' snapshots.json
+        sed -i '$ s/.$//' snapshots.json
         echo '}' >> snapshots.json
         jq snapshots.json
         echo "snapshots=$(jq -c snapshots.json)" >> $GITHUB_OUTPUT
