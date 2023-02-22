@@ -63,6 +63,8 @@ runs:
         # Print results to check summary
         echo '## npm snapshots' >> $GITHUB_STEP_SUMMARY
         while read -r path; do
+        NAME="$(jq -r .name ${path}/package.json)"
+        VERSION="(jq -r .version ${path}/package.json)",
         cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
         - [${NAME}@${VERSION}](https://npm.fluence.dev/-/web/detail/${NAME}/v/${VERSION})
         SNAPSHOT
