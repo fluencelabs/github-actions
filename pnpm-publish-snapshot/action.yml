@@ -43,7 +43,7 @@ runs:
           if [[ -f ${path}/package.json ]]; then
           cat < EOF >> snapshots.json
           "$(jq -r .name ${path}/package.json)": "(jq -r .version ${path}/package.json)",
-      EOF
+        EOF
           fi
         done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
         sed '$ s/.$//' snapshots.json
