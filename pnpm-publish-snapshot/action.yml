@@ -42,7 +42,7 @@ runs:
         while read -r path; do
           if [[ -f ${path}/package.json ]]; then
           cat <<EOF >> snapshots.json
-          "$(jq -r .name ${path}/package.json)": "(jq -r .version ${path}/package.json)",
+          "$(jq -r .name ${path}/package.json)": "$(jq -r .version ${path}/package.json)",
         EOF
           fi
         done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
@@ -63,8 +63,8 @@ runs:
         # Print results to check summary
         echo '## npm snapshots' >> $GITHUB_STEP_SUMMARY
         while read -r path; do
-        NAME="$(jq -r .name ${path}/package.json)"
-        VERSION="(jq -r .version ${path}/package.json)",
+        export NAME="$(jq -r .name ${path}/package.json)"
+        export VERSION="$(jq -r .version ${path}/package.json)"
         cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
         - [${NAME}@${VERSION}](https://npm.fluence.dev/-/web/detail/${NAME}/v/${VERSION})
         SNAPSHOT
