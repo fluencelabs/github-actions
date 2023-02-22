@@ -19,7 +19,7 @@ inputs:
 outputs:
   snapshots:
     description: "Published snapshots"
-    value: "${{ steps.snapshot.outputs.snapshots }}"
+    value: "${{ steps.snapshots.outputs.snapshots }}"
 
 runs:
   using: composite
