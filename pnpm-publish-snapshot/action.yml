@@ -1,0 +1,83 @@
+name: Publish pnpm snapshots
+description: |
+  Publish pnpm packages snapshot to fluence registry
+
+inputs:
+  publish:
+    description: "Publish snapshot"
+    type: bool
+    default: true
+  id:
+    description: "Snapshot id"
+    type: string
+    required: true
+  flags:
+    description: "Flags to pass to pnpm"
+    type: string
+    default: "--tag snapshot --registry https://npm.fluence.dev --recursive @fluencelabs/*"
+
+outputs:
+  snapshots:
+    description: "Published snapshots"
+    value: "${{ steps.snapshots.outputs.snapshots }}"
+
+runs:
+  using: composite
+  steps:
+    - name: Check inputs
+      shell: bash
+      run: |
+        # Check inputs
+        if [[ "${{ inputs.id }}" == "" ]]; then
+          echo "id input is empty"
+          exit 1
+        fi
+
+    - name: Get snapshots info
+      id: snapshots
+      shell: bash
+      run: |
+        # Get package version
+        echo '{' > snapshots.json
+        while read -r path; do
+          if [[ -f ${path}/package.json ]]; then
+          NAME="$(jq -r .name ${path}/package.json)"
+          NAME="${NAME/@fluencelabs\/}"
+          VERSION="$(jq -r .version ${path}/package.json)"
+          cat <<EOF >> snapshots.json
+          "${NAME}": "${VERSION}",
+        EOF
+          fi
+        done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
+        sed -i '$ s/.$//' snapshots.json
+        echo '}' >> snapshots.json
+        jq . snapshots.json
+        echo "snapshots=$(jq -c . snapshots.json)" >> $GITHUB_OUTPUT
+        rm snapshots.json
+
+    - name: Publish to self-hosted npm repo
+      if: inputs.publish == 'true'
+      shell: bash
+      run: pnpm publish ${{ inputs.flags }}
+
+    - name: Print results to check summary
+      shell: bash
+      run: |
+        # Print results to check summary
+        echo '## npm snapshots' >> $GITHUB_STEP_SUMMARY
+        while read -r path; do
+        NAME="$(jq -r .name ${path}/package.json)"
+        NAME="${NAME/@fluencelabs\/}"
+        VERSION="$(jq -r .version ${path}/package.json)"
+        cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
+        - [${NAME}@${VERSION}](https://npm.fluence.dev/-/web/detail/${NAME}/v/${VERSION})
+        SNAPSHOT
+        done < <(pnpm ls -r --depth -1 --filter '@fluencelabs/*' --parseable)
+
+        cat <<'SNAPSHOT' >> $GITHUB_STEP_SUMMARY
+        ### Access to Fluence npm registry
+        ```
+        vault read kv/basicauth/dev
+        npm login --registry npm.fluence.dev
+        ```
+        SNAPSHOT
