@@ -6,6 +6,10 @@ inputs:
   dependencies:
     description: "Map of dependencies to set in Cargo.toml"
     required: true
+  manifest:
+    description: "Path to root Cargo.toml"
+    required: false
+    default: "Cargo.toml"
 
 runs:
   using: composite
@@ -42,7 +46,7 @@ runs:
       run: |
         # Update Cargo.lock
         packages=$(cat input.json | jq -rc '.[].package |= "-p " + . | .[].package')
-        cargo update ${packages}
+        cargo update --manifest-path ${{ inputs.manifest }} ${packages}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
