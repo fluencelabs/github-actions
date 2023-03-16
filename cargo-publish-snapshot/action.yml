@@ -6,7 +6,7 @@ inputs:
   path:
     description: "Path to directory with root Cargo.toml"
     type: string
-    default: "Cargo.toml"
+    default: "./"
   publish:
     description: "Publish snapshots"
     type: bool
