@@ -6,4 +6,5 @@
   uses: fluencelabs/github-actions/cargo-publish-snapshot@main
   with:
     publish: false
+    path: subdir/Cargo.toml
 ```

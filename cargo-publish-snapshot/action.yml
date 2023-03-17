@@ -3,6 +3,10 @@ description: |
   Publish crates snapshots to fluence registry
 
 inputs:
+  path:
+    description: "Path to directory with root Cargo.toml"
+    type: string
+    default: "./"
   publish:
     description: "Publish snapshots"
     type: bool
@@ -33,13 +37,14 @@ runs:
         fi
 
     - name: Install cargo-workspaces
-      uses: baptiste0928/cargo-install@v1.3.0
+      uses: baptiste0928/cargo-install@v1.3.1
       with:
         crate: cargo-workspaces
         version: 0.2.35
 
     - name: Set version to snapshot
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Set version to snapshot
         cargo workspaces version \
@@ -64,6 +69,7 @@ runs:
         python -m pip install -r ${{ github.action_path }}/requirements.txt
 
     - name: Prepare for publishing
+      working-directory: ${{ inputs.path }}
       if: inputs.publish == 'true'
       shell: bash
       run: |
@@ -77,6 +83,7 @@ runs:
 
     - name: Publish snapshots to selfhosted registry
       if: inputs.publish == 'true'
+      working-directory: ${{ inputs.path }}
       shell: bash
       env:
         RETRY: 2
@@ -96,6 +103,7 @@ runs:
 
     - name: Get final snapshot version
       id: version
+      working-directory: ${{ inputs.path }}
       shell: bash
       run: |
         # Get final snapshot version
@@ -104,6 +112,7 @@ runs:
 
     - name: Print results to check summary
       if: inputs.publish == 'true'
+      working-directory: ${{ inputs.path }}
       shell: bash
       env:
         VERSION: ${{ steps.version.outputs.version }}
