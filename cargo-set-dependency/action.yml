@@ -6,10 +6,10 @@ inputs:
   dependencies:
     description: "Map of dependencies to set in Cargo.toml"
     required: true
-  manifest:
-    description: "Path to root Cargo.toml"
-    required: false
-    default: "Cargo.toml"
+  path:
+    description: "Path to directory with root Cargo.toml"
+    type: string
+    default: "./"
 
 runs:
   using: composite
@@ -17,6 +17,7 @@ runs:
   steps:
     - name: Print dependencies
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Print dependencies
         echo '${{ inputs.dependencies }}' | jq -C
@@ -35,18 +36,20 @@ runs:
 
     - name: Override dependencies
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Override dependencies
         python ${{ github.action_path }}/cargo-set-dependency.py
 
     - name: Update Cargo.lock
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         CARGO_UNSTABLE_SPARSE_REGISTRY: true
       run: |
         # Update Cargo.lock
         packages=$(cat input.json | jq -rc '.[].package |= "-p " + . | .[].package')
-        cargo update --manifest-path ${{ inputs.manifest }} ${packages}
+        cargo update ${packages}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
@@ -55,11 +58,12 @@ runs:
 
     - name: Check that dependency is set in Cargo.lock
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Chech that dependency is set in Cargo.lock
         exit=0
         while read -r package version; do
-          version_lock="$(dasel -f $(dirname ${{ inputs.manifest }})/Cargo.lock -p toml -m --plain "package.(name=${package}).version")"
+          version_lock="$(dasel -f Cargo.lock -p toml -m --plain "package.(name=${package}).version")"
           if ! [[ ${version} =~ ${version_lock} ]]; then
         cat <<ERROR
         ${package} override unsuccessful.
@@ -72,6 +76,7 @@ runs:
 
     - name: Print results to check summary
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Print result to check summary
         cat <<TABLE >> $GITHUB_STEP_SUMMARY
@@ -81,6 +86,6 @@ runs:
         TABLE
         while read -r package; do
         cat <<VERSIONS >> $GITHUB_STEP_SUMMARY
-        | ${package} | $(dasel -f $(dirname ${{ inputs.manifest }})/Cargo.lock -p toml "package.(name=${package}).version" -m)
+        | ${package} | $(dasel -f Cargo.lock -p toml "package.(name=${package}).version" -m)
         VERSIONS
         done < <(cat input.json | jq -rc '.[].package')
