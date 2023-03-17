@@ -17,6 +17,7 @@ runs:
   steps:
     - name: Print dependencies
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Print dependencies
         echo '${{ inputs.dependencies }}' | jq -C
