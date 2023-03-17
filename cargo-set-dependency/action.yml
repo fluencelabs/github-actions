@@ -35,6 +35,7 @@ runs:
 
     - name: Override dependencies
       shell: bash
+      working-directory: ${{ inputs.path }}
       run: |
         # Override dependencies
         python ${{ github.action_path }}/cargo-set-dependency.py
