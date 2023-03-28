@@ -14,7 +14,7 @@ inputs:
   flags:
     description: "Flags to pass to pnpm"
     type: string
-    default: "--tag snapshot --registry https://npm.fluence.dev --recursive @fluencelabs/*"
+    default: "-r --registry https://npm.fluence.dev --no-git-checks --tag snapshot -filter '@fluencelabs/*'"
 
 outputs:
   snapshots:
@@ -32,6 +32,14 @@ runs:
           echo "id input is empty"
           exit 1
         fi
+
+    - name: Set package version
+      id: version
+      shell: bash
+      run: |
+        # Set package version
+        pnpm recursive --filter '@fluencelabs/*' exec -- pnpm version prerelease --no-git-tag-version --preid ${{ inputs.id }}
+        pnpm i
 
     - name: Get snapshots info
       id: snapshots
