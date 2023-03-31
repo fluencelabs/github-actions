@@ -15,6 +15,8 @@ inputs:
     description: "Flags to pass to pnpm"
     type: string
     default: "-r --registry https://npm.fluence.dev --no-git-checks --tag snapshot -filter '@fluencelabs/*'"
+  set-version:
+    default: true
 
 outputs:
   snapshots:
@@ -36,6 +38,7 @@ runs:
     - name: Set package version
       id: version
       shell: bash
+      if: inputs.set-version == 'true'
       run: |
         # Set package version
         pnpm recursive --filter '@fluencelabs/*' exec -- pnpm version prerelease --no-git-tag-version --preid ${{ inputs.id }}
