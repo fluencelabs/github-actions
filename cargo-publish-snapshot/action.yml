@@ -99,13 +99,13 @@ runs:
             --no-verify \
             -y prerelease
           ((RETRY--))
+        done
         else
         cargo publish \
           --registry fluence \
           --allow-dirty \
           --no-verify
         fi
-        done
 
     - name: Get final snapshot version
       id: version
