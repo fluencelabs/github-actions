@@ -40,7 +40,7 @@ runs:
       uses: baptiste0928/cargo-install@v2.0.0
       with:
         crate: cargo-workspaces
-        version: 0.2.36
+        args: --git https://github.com/folex/cargo-workspaces
 
     - name: Set version to snapshot
       shell: bash
