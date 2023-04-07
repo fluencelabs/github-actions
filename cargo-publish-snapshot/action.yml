@@ -89,7 +89,7 @@ runs:
         RETRY: 2
       run: |
         # Publish snapshots to self-hosted registry
-        if ((cargo ws list | wc -l > 1)); then
+        if (($(cargo ws list | wc -l) > 1)); then
         while ((RETRY)); do
           cargo workspaces publish \
             --registry fluence \
