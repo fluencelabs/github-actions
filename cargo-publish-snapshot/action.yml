@@ -89,8 +89,8 @@ runs:
         RETRY: 2
       run: |
         # Publish snapshots to self-hosted registry
+        if ((cargo ws list | wc -l > 1)); then
         while ((RETRY)); do
-          if ((cargo ws list | wc -l > 1)); then
           cargo workspaces publish \
             --registry fluence \
             --no-git-commit \
@@ -98,13 +98,13 @@ runs:
             --allow-dirty \
             --no-verify \
             -y prerelease
-          else
-          cargo publish \
-            --registry fluence \
-            --allow-dirty \
-            --no-verify
-          fi
           ((RETRY--))
+        else
+        cargo publish \
+          --registry fluence \
+          --allow-dirty \
+          --no-verify
+        fi
         done
 
     - name: Get final snapshot version
