@@ -40,7 +40,7 @@ runs:
       uses: baptiste0928/cargo-install@v2.0.0
       with:
         crate: cargo-workspaces
-        version: 0.2.36
+        version: 0.2.35
 
     - name: Set version to snapshot
       shell: bash
@@ -88,8 +88,9 @@ runs:
       env:
         RETRY: 2
       run: |
-        # Publish snapshots to selfhosted registry
+        # Publish snapshots to self-hosted registry
         while ((RETRY)); do
+          if ((cargo ws list | wc -l > 1)); then
           cargo workspaces publish \
             --registry fluence \
             --no-git-commit \
@@ -97,7 +98,12 @@ runs:
             --allow-dirty \
             --no-verify \
             -y prerelease
-
+          else
+          cargo publish \
+            --registry fluence \
+            --allow-dirty \
+            --no-verify
+          fi
           ((RETRY--))
         done
 
