@@ -1,0 +1,16 @@
+name: Update fluence-cli dependencies
+description: |
+  Update fluence-cli dependencies in fluence.yaml
+
+inputs:
+  versions:
+    description: "JSON object containing the new versions for each dependency"
+    required: true
+  path:
+    description: "Path to project directory with fluence.yaml file"
+    required: false
+    default: "./"
+
+runs:
+  using: "node16"
+  main: "dist/index.js"
