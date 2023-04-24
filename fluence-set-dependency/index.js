@@ -4,10 +4,7 @@ const core = require("@actions/core");
 const path = require("path");
 
 // Read the project path from the input variable
-const projectPath = path.join(
-  process.cwd(),
-  core.getInput("path"),
-);
+const projectPath = core.getInput("path");
 
 // Change the working directory to the specified project path
 process.chdir(projectPath);

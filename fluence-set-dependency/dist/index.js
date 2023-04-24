@@ -6946,10 +6946,7 @@ const core = __nccwpck_require__(2186);
 const path = __nccwpck_require__(1017);
 
 // Read the project path from the input variable
-const projectPath = path.join(
-  process.cwd(),
-  core.getInput("path"),
-);
+const projectPath = core.getInput("path");
 
 // Change the working directory to the specified project path
 process.chdir(projectPath);
