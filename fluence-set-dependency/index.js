@@ -7,7 +7,7 @@ const path = require("path");
 const projectPath = core.getInput("path");
 
 // Change the working directory to the specified project path
-process.chdir(join(projectPath, process.env.GITHUB_WORKSPACE));
+process.chdir(path.join(projectPath, process.env.GITHUB_WORKSPACE));
 
 // Construct the path to the fluence.yaml file
 const fluenceFilePath = path.join(projectPath, "fluence.yaml");
