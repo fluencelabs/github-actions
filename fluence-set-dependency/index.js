@@ -5,7 +5,7 @@ const path = require("path");
 
 // Read the project path from the input variable
 const projectPath = path.join(
-  process.env.GITHUB_WORKSPACE,
+  process.cwd(),
   core.getInput("path"),
 );
 
