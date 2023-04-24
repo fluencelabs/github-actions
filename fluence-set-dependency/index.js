@@ -5,6 +5,8 @@ const path = require("path");
 
 // Read the project path from the input variable
 const projectPath = core.getInput("path");
+console.log("Current working directory:", process.cwd());
+console.log("Project path:", projectPath);
 
 // Construct the path to the fluence.yaml file
 const fluenceFilePath = path.join(projectPath, "fluence.yaml");
