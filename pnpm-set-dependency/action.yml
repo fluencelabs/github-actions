@@ -34,7 +34,7 @@ runs:
       run: |
         # Parse JSON and generate pnpmfile.js
         cat > pnpmfile.js <<EOL
-        const dependencyOverrides = ${{ inputs.dependencies }};
+        const dependencyOverrides = ${{ fromJSON(inputs.dependencies) }};
 
         module.exports = {
           hooks: {
