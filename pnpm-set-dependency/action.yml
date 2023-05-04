@@ -24,7 +24,7 @@ runs:
         fi
 
         # Check that dependencies input is valid json
-        if ! [[ echo "$DEPS_JSON" | jq ]]; then
+        if ! $(echo "$DEPS_JSON" | jq); then
           echo "dependencies input is not valid json"
           exit 1
         fi
