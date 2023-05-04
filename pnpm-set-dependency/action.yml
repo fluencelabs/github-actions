@@ -15,7 +15,7 @@ runs:
     - name: Check if dependencies input is valid
       shell: bash
       env:
-        DEPS_JSON: "${{ fromJSON(inputs.dependencies) }}"
+        DEPS_JSON: "${{ toJSON(inputs.dependencies) }}"
       run: |
         # Check if dependencies input was provided
         if [[ -z "$DEPS_JSON" ]]; then
@@ -34,7 +34,7 @@ runs:
       run: |
         # Parse JSON and generate pnpmfile.js
         cat > pnpmfile.js <<EOL
-        const dependencyOverrides = ${{ fromJSON(inputs.dependencies) }};
+        const dependencyOverrides = ${{ toJSON(inputs.dependencies) }};
 
         module.exports = {
           hooks: {
