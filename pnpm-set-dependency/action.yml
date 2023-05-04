@@ -1,0 +1,49 @@
+name: Override dependencies in pnpm project
+description: |
+  Override dependencies in pnpm project
+
+inputs:
+  dependencies:
+    description: "JSON of dependencies"
+    type: string
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Check if dependencies input is valid
+      shell: bash
+      env:
+        DEPS_JSON: "${{ inputs.dependencies }}"
+      run: |
+        # Check if dependencies input was provided
+        if ! [[ -n "$DEPS_JSON" ]]; then
+          echo "No dependencies input provided."
+          exit 1
+        fi
+
+    - name: Generate pnpmfile.js
+      shell: bash
+      run: |
+        # Parse JSON and generate pnpmfile.js
+        cat > pnpmfile.js <<EOL
+        const dependencyOverrides = ${{ inputs.dependencies }};
+
+        module.exports = {
+          hooks: {
+            readPackage(packageJson) {
+              ['dependencies', 'devDependencies'].forEach(depKey => {
+                if (packageJson[depKey]) {
+                  for (const [dependency, newVersion] of Object.entries(dependencyOverrides)) {
+                    if (newVersion && newVersion.toLowerCase() !== 'null' && packageJson[depKey][dependency]) {
+                      packageJson[depKey][dependency] = newVersion;
+                    }
+                  }
+                }
+              });
+              return packageJson;
+            },
+          },
+        };
+        EOL
