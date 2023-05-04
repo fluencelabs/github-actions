@@ -27,23 +27,29 @@ runs:
       shell: bash
       run: |
         # Parse JSON and generate pnpmfile.js
-        cat > pnpmfile.js <<EOL
+        cat > .pnpmfile.cjs <<EOL
         const dependencyOverrides = ${{ inputs.dependencies }};
+
+        function overrideDependencies(deps) {
+          for (const [dependency, newVersion] of Object.entries(dependencyOverrides)) {
+            if (newVersion && newVersion.toLowerCase() !== 'null' && deps[dependency]) {
+              deps[dependency] = newVersion;
+            }
+          }
+        }
 
         module.exports = {
           hooks: {
             readPackage(packageJson) {
-              ['dependencies', 'devDependencies'].forEach(depKey => {
-                if (packageJson[depKey]) {
-                  for (const [dependency, newVersion] of Object.entries(dependencyOverrides)) {
-                    if (newVersion && newVersion.toLowerCase() !== 'null' && packageJson[depKey][dependency]) {
-                      packageJson[depKey][dependency] = newVersion;
-                    }
-                  }
-                }
-              });
+              if (packageJson.dependencies) {
+                overrideDependencies(packageJson.dependencies);
+              }
+              if (packageJson.devDependencies) {
+                overrideDependencies(packageJson.devDependencies);
+              }
               return packageJson;
             },
           },
         };
         EOL
+
