@@ -18,7 +18,7 @@ runs:
         DEPS_JSON: "${{ inputs.dependencies }}"
       run: |
         # Check if dependencies input was provided
-        if [[ -n "$DEPS_JSON" ]]; then
+        if ! [[ -n "$DEPS_JSON" ]]; then
           echo "No dependencies input provided."
           exit 1
         fi
