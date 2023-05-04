@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const fs = require("fs");
 const path = require("path");
 const { findWorkspacePackages } = require("@pnpm/find-workspace-packages");
+const { readProjectManifest } = require("pnpm");
 
 function overrideDependencies(packageJson, dependencies) {
   ["dependencies", "devDependencies"].forEach((depKey) => {
