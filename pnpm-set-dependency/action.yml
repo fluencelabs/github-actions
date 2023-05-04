@@ -15,7 +15,7 @@ runs:
     - name: Check if dependencies input is valid
       shell: bash
       env:
-        DEPS_JSON: ${{ inputs.dependencies }}
+        DEPS_JSON: "${{ fromJSON(inputs.dependencies) }}"
       run: |
         # Check if dependencies input was provided
         if [[ -z "$DEPS_JSON" ]]; then
