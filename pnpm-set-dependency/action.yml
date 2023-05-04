@@ -9,47 +9,5 @@ inputs:
     required: true
 
 runs:
-  using: composite
-
-  steps:
-    - name: Check if dependencies input is valid
-      shell: bash
-      env:
-        DEPS_JSON: "${{ inputs.dependencies }}"
-      run: |
-        # Check if dependencies input was provided
-        if ! [[ -n "$DEPS_JSON" ]]; then
-          echo "No dependencies input provided."
-          exit 1
-        fi
-
-    - name: Generate pnpmfile.js
-      shell: bash
-      run: |
-        # Parse JSON and generate pnpmfile.js
-        cat > .pnpmfile.cjs <<EOL
-        const dependencyOverrides = ${{ inputs.dependencies }};
-
-        function overrideDependencies(deps) {
-          for (const [dependency, newVersion] of Object.entries(dependencyOverrides)) {
-            if (newVersion && newVersion.toLowerCase() !== 'null' && deps[dependency]) {
-              deps[dependency] = newVersion;
-            }
-          }
-        }
-
-        module.exports = {
-          hooks: {
-            readPackage(packageJson) {
-              if (packageJson.dependencies) {
-                overrideDependencies(packageJson.dependencies);
-              }
-              if (packageJson.devDependencies) {
-                overrideDependencies(packageJson.devDependencies);
-              }
-              return packageJson;
-            },
-          },
-        };
-        EOL
-
+  using: "node16"
+  main: "dist/index.js"
