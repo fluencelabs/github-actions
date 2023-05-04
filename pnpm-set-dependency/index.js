@@ -1,14 +1,12 @@
 const core = require("@actions/core");
-const pnpm = require("pnpm");
 const fs = require("fs");
 const path = require("path");
+const { findWorkspacePackages } = require("@pnpm/find-workspace-packages");
 
 function overrideDependencies(packageJson, dependencies) {
   ["dependencies", "devDependencies"].forEach((depKey) => {
     if (packageJson[depKey]) {
-      for (
-        const [dependency, newVersion] of Object.entries(dependencies)
-      ) {
+      for (const [dependency, newVersion] of Object.entries(dependencies)) {
         if (
           newVersion &&
           newVersion.toLowerCase() !== "null" &&
@@ -24,12 +22,11 @@ function overrideDependencies(packageJson, dependencies) {
 
 (async () => {
   try {
-    const dependencies = core.getInput("dependencies");
-    const depsJson = JSON.parse(dependencies || "{}");
+    const dependenciesInput = core.getInput("dependencies");
+    const depsJson = JSON.parse(dependenciesInput || "{}");
 
     const workspaceDir = process.cwd();
-    const workspaceManifest = await pnpm.readWorkspaceManifest(workspaceDir);
-    const workspacePackages = await workspaceManifest.findAll();
+    const workspacePackages = await findWorkspacePackages(workspaceDir);
 
     for (const pkg of workspacePackages) {
       const packageJsonPath = path.join(pkg.dir, "package.json");
