@@ -8,6 +8,7 @@ async function main() {
   const env = core.getInput("env");
   const timeout = parseInt(core.getInput("timeout"));
   let peers, relay;
+  console.log(env)
 
   const errorMessages = [];
 
