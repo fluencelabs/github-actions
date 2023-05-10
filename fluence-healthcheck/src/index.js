@@ -8,7 +8,8 @@ async function main() {
   const env = core.getInput("env");
   const timeout = parseInt(core.getInput("timeout"));
   let peers, relay;
-  console.log(env)
+  console.log(process.env.GITHUB_CONTEXT);
+  console.log(env);
 
   const errorMessages = [];
 
