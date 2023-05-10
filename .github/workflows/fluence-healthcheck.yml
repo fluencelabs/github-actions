@@ -11,6 +11,9 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
+env:
+  ACTIONS_STEP_DEBUG: true
+
 jobs:
   healthcheck:
     name: "connectivity - stage"
