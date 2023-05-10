@@ -5,6 +5,7 @@ import * as network from "@fluencelabs/fluence-network-environment";
 import { checkPeer } from "./_aqua/main.js";
 
 async function main() {
+  console.log(process.env);
   const env = core.getInput("env");
   const timeout = parseInt(core.getInput("timeout"));
   let peers, relay;
