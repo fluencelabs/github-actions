@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "fluence-healthcheck/**"
-      - ".github/workflows/fluence-healthcheck-ci.yml"
+      - ".github/workflows/fluence-healthcheck.yml"
       - "!**.md"
 
 concurrency:
