@@ -1,20 +1,19 @@
-name: Check connectivity to Fluence peer
+name: Check connectivity in fluence env
 description: |
-  Check connectivity to Fluence peer or peers
+  Check connectivity in fluence env
 
 inputs:
-  target:
-    description: "Fluence environment (stage, testnet or krasnodar) or peer multiaddr."
-    default: "krasnodar"
-  aqua-version:
-    description: "aqua version to use"
-    default: "latest"
-
+  env:
+    description: "Fluence environment (stage, testnet or krasnodar)"
+    required: true
+  timeout:
+    description: "Timeout in milliseconds"
+    required: false
+    default: "25000"
 outputs:
-  log:
-    description: "aqua script log"
-    value: ${{ steps.check.outputs.log }}
+  error_log:
+    description: "Error messages from checkPeer"
 
 runs:
   using: "node16"
-  main: "dist/index.js"
+  main: "src/index.js"

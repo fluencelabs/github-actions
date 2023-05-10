@@ -1,16 +1,10 @@
 import "@fluencelabs/aqua-lib/builtin.aqua"
 
-service Console("run-console"):
-    print(msg: string)
-
 service OpString("op"):
     concat_strings(a: string, b: string, c: string, d: string, e: string, f: string) -> string
     identity(s: string) -> string
 
 func checkPeer(targetPeer: PeerId, validatorPeers: []PeerId, timeout: u32) -> []string:
---    if HOST_PEER_ID == targetPeer:
---        Console.print("targetPeer must be different from HOST_PEER_ID. Please pass another multuaddress via --addr")
-
     reachability: *string
     for validator <- validatorPeers par:
         validatorStatus: *string

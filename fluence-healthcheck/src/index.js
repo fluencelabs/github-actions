@@ -1,12 +1,15 @@
 import "@fluencelabs/js-client.node";
+import * as core from "@actions/core";
 import { Fluence } from "@fluencelabs/js-client.api";
 import * as network from "@fluencelabs/fluence-network-environment";
 import { checkPeer } from "./_aqua/main.js";
 
 async function main() {
-  const env = process.env.ENV;
-  const timeout = parseInt(process.env.TIMEOUT) || 25000;
+  const env = core.getInput("env");
+  const timeout = parseInt(core.getInput("timeout"));
   let peers, relay;
+
+  const errorMessages = [];
 
   switch (env) {
     case "stage":
@@ -27,6 +30,7 @@ async function main() {
   }
 
   try {
+    console.log(relay)
     await Fluence.connect(relay.multiaddr);
 
     const data = peers.map(({ peerId }, index) => ({
@@ -43,14 +47,24 @@ async function main() {
         });
         console.log(result);
       } catch (e) {
-        console.error(JSON.stringify(e, null, 2));
+        const errorMessage = JSON.stringify(e, null, 2);
+        console.error(errorMessage);
+        errorMessages.push(`${multiaddr} failed: ${errorMessage}`);
       }
     }
   } catch (e) {
-    console.error(`Error connecting to ${relay.multiaddr}: ${e}`);
+    console.error(`Error connecting to ${relay.multiaddr}:\n ${e}`);
   } finally {
     await Fluence.disconnect();
   }
+
+  if (errorMessages.length > 0) {
+    core.setOutput("error_log", errorMessages.join("\n"));
+    console.log(errorMessages.join("\n"));
+    process.exit(1);
+  }
 }
 
-main();
+main().catch((error) => {
+  core.setFailed(error.message);
+});

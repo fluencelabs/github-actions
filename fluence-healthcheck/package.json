@@ -4,7 +4,7 @@
   "exports": "./src/index.js",
   "type": "module",
   "scripts": {
-    "build": "npm run compile && ncc build src/index.js",
+    "build": "npm run compile",
     "compile": "fluence aqua --js -i ./src/aqua/ -o ./src/_aqua"
   },
   "author": "Fluence Labs",
@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@fluencelabs/aqua-lib": "^0.6.0",
-    "@fluencelabs/cli": "^0.3.9",
-    "@vercel/ncc": "^0.36.1"
+    "@fluencelabs/cli": "^0.3.9"
   }
 }
