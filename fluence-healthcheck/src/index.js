@@ -13,7 +13,7 @@ async function main() {
       peers = network.stage;
       relay = network.randomStage();
       break;
-    case "testNet":
+    case "testnet":
       peers = network.testNet;
       relay = network.randomTestNet();
       break;
@@ -22,7 +22,7 @@ async function main() {
       relay = network.randomKras();
       break;
     default:
-      console.error('Invalid ENV value. Use "stage", "testNet", or "kras".');
+      console.error('Invalid ENV value. Use "stage", "testnet", or "kras".');
       process.exit(1);
   }
 
