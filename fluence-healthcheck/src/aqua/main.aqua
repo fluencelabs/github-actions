@@ -8,8 +8,8 @@ service OpString("op"):
     identity(s: string) -> string
 
 func checkPeer(targetPeer: PeerId, validatorPeers: []PeerId, timeout: u32) -> []string:
-    if HOST_PEER_ID == targetPeer:
-        Console.print("targetPeer must be different from HOST_PEER_ID. Please pass another multuaddress via --addr")
+--    if HOST_PEER_ID == targetPeer:
+--        Console.print("targetPeer must be different from HOST_PEER_ID. Please pass another multuaddress via --addr")
 
     reachability: *string
     for validator <- validatorPeers par:

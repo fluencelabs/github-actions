@@ -155,179 +155,168 @@ export function checkPeer(...args) {
                             (seq
                              (seq
                               (seq
-                               (seq
-                                (xor
-                                 (match -relay- targetPeer
-                                  (xor
-                                   (call %init_peer_id% ("run-console" "print") ["targetPeer must be different from HOST_PEER_ID. Please pass another multuaddress via --addr"])
-                                   (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
-                                  )
-                                 )
-                                 (call %init_peer_id% ("op" "noop") [])
-                                )
-                                (par
-                                 (fold validatorPeers validator-0
-                                  (par
-                                   (new $targetStatus
-                                    (new $validatorStatus
+                               (par
+                                (fold validatorPeers validator-0
+                                 (par
+                                  (new $targetStatus
+                                   (new $validatorStatus
+                                    (seq
                                      (seq
                                       (seq
                                        (seq
-                                        (seq
-                                         (par
-                                          (seq
-                                           (call -relay- ("op" "noop") [])
-                                           (xor
-                                            (seq
-                                             (call validator-0 ("op" "identity") ["VALIDATOR REACHABLE"] $validatorStatus)
-                                             (call -relay- ("op" "noop") [])
-                                            )
-                                            (seq
-                                             (call -relay- ("op" "noop") [])
-                                             (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 2])
-                                            )
-                                           )
-                                          )
-                                          (call %init_peer_id% ("peer" "timeout") [timeout "VALIDATOR NOT REACHABLE"] $validatorStatus)
-                                         )
-                                         (new $validatorStatus_test
-                                          (seq
+                                        (par
+                                         (seq
+                                          (call -relay- ("op" "noop") [])
+                                          (xor
                                            (seq
-                                            (seq
-                                             (call %init_peer_id% ("math" "add") [0 1] validatorStatus_incr)
-                                             (fold $validatorStatus validatorStatus_fold_var
-                                              (seq
-                                               (seq
-                                                (ap validatorStatus_fold_var $validatorStatus_test)
-                                                (canon %init_peer_id% $validatorStatus_test  #validatorStatus_iter_canon)
-                                               )
-                                               (xor
-                                                (match #validatorStatus_iter_canon.length validatorStatus_incr
-                                                 (null)
-                                                )
-                                                (next validatorStatus_fold_var)
-                                               )
-                                              )
-                                              (never)
-                                             )
-                                            )
-                                            (canon %init_peer_id% $validatorStatus_test  #validatorStatus_result_canon)
+                                            (call validator-0 ("op" "identity") ["VALIDATOR REACHABLE"] $validatorStatus)
+                                            (call -relay- ("op" "noop") [])
                                            )
-                                           (ap #validatorStatus_result_canon validatorStatus_gate)
+                                           (seq
+                                            (call -relay- ("op" "noop") [])
+                                            (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
+                                           )
                                           )
                                          )
+                                         (call %init_peer_id% ("peer" "timeout") [timeout "VALIDATOR NOT REACHABLE"] $validatorStatus)
                                         )
-                                        (canon %init_peer_id% $validatorStatus  #validatorStatus_canon)
-                                       )
-                                       (call %init_peer_id% ("op" "identity") [#validatorStatus_canon] st)
-                                      )
-                                      (xor
-                                       (match st.$.[0]! "VALIDATOR REACHABLE"
-                                        (xor
+                                        (new $validatorStatus_test
                                          (seq
                                           (seq
                                            (seq
-                                            (seq
-                                             (par
+                                            (call %init_peer_id% ("math" "add") [0 1] validatorStatus_incr)
+                                            (fold $validatorStatus validatorStatus_fold_var
+                                             (seq
                                               (seq
-                                               (seq
-                                                (call -relay- ("op" "noop") [])
-                                                (call validator-0 ("op" "noop") [])
+                                               (ap validatorStatus_fold_var $validatorStatus_test)
+                                               (canon %init_peer_id% $validatorStatus_test  #validatorStatus_iter_canon)
+                                              )
+                                              (xor
+                                               (match #validatorStatus_iter_canon.length validatorStatus_incr
+                                                (null)
                                                )
-                                               (xor
+                                               (next validatorStatus_fold_var)
+                                              )
+                                             )
+                                             (never)
+                                            )
+                                           )
+                                           (canon %init_peer_id% $validatorStatus_test  #validatorStatus_result_canon)
+                                          )
+                                          (ap #validatorStatus_result_canon validatorStatus_gate)
+                                         )
+                                        )
+                                       )
+                                       (canon %init_peer_id% $validatorStatus  #validatorStatus_canon)
+                                      )
+                                      (call %init_peer_id% ("op" "identity") [#validatorStatus_canon] st)
+                                     )
+                                     (xor
+                                      (match st.$.[0]! "VALIDATOR REACHABLE"
+                                       (xor
+                                        (seq
+                                         (seq
+                                          (seq
+                                           (seq
+                                            (par
+                                             (seq
+                                              (seq
+                                               (call -relay- ("op" "noop") [])
+                                               (call validator-0 ("op" "noop") [])
+                                              )
+                                              (xor
+                                               (seq
                                                 (seq
-                                                 (seq
-                                                  (call targetPeer ("op" "identity") ["TARGET REACHABLE"] $targetStatus)
-                                                  (call validator-0 ("op" "noop") [])
-                                                 )
+                                                 (call targetPeer ("op" "identity") ["TARGET REACHABLE"] $targetStatus)
+                                                 (call validator-0 ("op" "noop") [])
+                                                )
+                                                (call -relay- ("op" "noop") [])
+                                               )
+                                               (seq
+                                                (seq
+                                                 (call validator-0 ("op" "noop") [])
                                                  (call -relay- ("op" "noop") [])
                                                 )
-                                                (seq
-                                                 (seq
-                                                  (call validator-0 ("op" "noop") [])
-                                                  (call -relay- ("op" "noop") [])
-                                                 )
-                                                 (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 3])
-                                                )
+                                                (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 2])
                                                )
                                               )
-                                              (call %init_peer_id% ("peer" "timeout") [timeout "TARGET NOT REACHABLE"] $targetStatus)
                                              )
-                                             (new $targetStatus_test
-                                              (seq
-                                               (seq
-                                                (seq
-                                                 (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr)
-                                                 (fold $targetStatus targetStatus_fold_var
-                                                  (seq
-                                                   (seq
-                                                    (ap targetStatus_fold_var $targetStatus_test)
-                                                    (canon %init_peer_id% $targetStatus_test  #targetStatus_iter_canon)
-                                                   )
-                                                   (xor
-                                                    (match #targetStatus_iter_canon.length targetStatus_incr
-                                                     (null)
-                                                    )
-                                                    (next targetStatus_fold_var)
-                                                   )
-                                                  )
-                                                  (never)
-                                                 )
-                                                )
-                                                (canon %init_peer_id% $targetStatus_test  #targetStatus_result_canon)
-                                               )
-                                               (ap #targetStatus_result_canon targetStatus_gate)
-                                              )
-                                             )
+                                             (call %init_peer_id% ("peer" "timeout") [timeout "TARGET NOT REACHABLE"] $targetStatus)
                                             )
-                                            (new $targetStatus_test-0
+                                            (new $targetStatus_test
                                              (seq
                                               (seq
                                                (seq
-                                                (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr-0)
-                                                (fold $targetStatus targetStatus_fold_var-0
+                                                (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr)
+                                                (fold $targetStatus targetStatus_fold_var
                                                  (seq
                                                   (seq
-                                                   (ap targetStatus_fold_var-0 $targetStatus_test-0)
-                                                   (canon %init_peer_id% $targetStatus_test-0  #targetStatus_iter_canon-0)
+                                                   (ap targetStatus_fold_var $targetStatus_test)
+                                                   (canon %init_peer_id% $targetStatus_test  #targetStatus_iter_canon)
                                                   )
                                                   (xor
-                                                   (match #targetStatus_iter_canon-0.length targetStatus_incr-0
+                                                   (match #targetStatus_iter_canon.length targetStatus_incr
                                                     (null)
                                                    )
-                                                   (next targetStatus_fold_var-0)
+                                                   (next targetStatus_fold_var)
                                                   )
                                                  )
                                                  (never)
                                                 )
                                                )
-                                               (canon %init_peer_id% $targetStatus_test-0  #targetStatus_result_canon-0)
+                                               (canon %init_peer_id% $targetStatus_test  #targetStatus_result_canon)
                                               )
-                                              (ap #targetStatus_result_canon-0 targetStatus_gate-0)
+                                              (ap #targetStatus_result_canon targetStatus_gate)
                                              )
                                             )
                                            )
-                                           (call %init_peer_id% ("op" "concat_strings") ["target " targetPeer " validator " validator-0 " status " targetStatus_gate-0.$.[0]!] concat_strings)
+                                           (new $targetStatus_test-0
+                                            (seq
+                                             (seq
+                                              (seq
+                                               (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr-0)
+                                               (fold $targetStatus targetStatus_fold_var-0
+                                                (seq
+                                                 (seq
+                                                  (ap targetStatus_fold_var-0 $targetStatus_test-0)
+                                                  (canon %init_peer_id% $targetStatus_test-0  #targetStatus_iter_canon-0)
+                                                 )
+                                                 (xor
+                                                  (match #targetStatus_iter_canon-0.length targetStatus_incr-0
+                                                   (null)
+                                                  )
+                                                  (next targetStatus_fold_var-0)
+                                                 )
+                                                )
+                                                (never)
+                                               )
+                                              )
+                                              (canon %init_peer_id% $targetStatus_test-0  #targetStatus_result_canon-0)
+                                             )
+                                             (ap #targetStatus_result_canon-0 targetStatus_gate-0)
+                                            )
+                                           )
                                           )
-                                          (ap concat_strings $reachability)
+                                          (call %init_peer_id% ("op" "concat_strings") ["target " targetPeer " validator " validator-0 " status " targetStatus_gate-0.$.[0]!] concat_strings)
                                          )
-                                         (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 4])
+                                         (ap concat_strings $reachability)
                                         )
+                                        (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 3])
                                        )
-                                       (seq
-                                        (call %init_peer_id% ("op" "concat_strings") ["validator " validator-0 " relay " -relay- " status " "VALIDATOR NOT REACHABLE"] concat_strings-0)
-                                        (ap concat_strings-0 $reachability)
-                                       )
+                                      )
+                                      (seq
+                                       (call %init_peer_id% ("op" "concat_strings") ["validator " validator-0 " relay " -relay- " status " "VALIDATOR NOT REACHABLE"] concat_strings-0)
+                                       (ap concat_strings-0 $reachability)
                                       )
                                      )
                                     )
                                    )
-                                   (next validator-0)
                                   )
-                                  (never)
+                                  (next validator-0)
                                  )
-                                 (null)
+                                 (never)
                                 )
+                                (null)
                                )
                                (call %init_peer_id% ("op" "array_length") [validatorPeers] array_length)
                               )
@@ -372,10 +361,10 @@ export function checkPeer(...args) {
                       )
                       (xor
                        (call %init_peer_id% ("callbackSrv" "response") [-reachability-flat-0])
-                       (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 5])
+                       (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 4])
                       )
                      )
-                     (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 6])
+                     (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 5])
                     )
     `
     return callFunction$$(
