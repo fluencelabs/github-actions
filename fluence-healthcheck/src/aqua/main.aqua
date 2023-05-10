@@ -1,0 +1,54 @@
+import "@fluencelabs/aqua-lib/builtin.aqua"
+
+service Console("run-console"):
+    print(msg: string)
+
+service OpString("op"):
+    concat_strings(a: string, b: string, c: string, d: string, e: string, f: string) -> string
+    identity(s: string) -> string
+
+func checkNodeIsUp(targetNode: PeerId, validatorNodes: []PeerId, timeout: u32) -> []string:
+    if HOST_PEER_ID == targetNode:
+        Console.print("targetNode must be different from HOST_PEER_ID. Please pass another multuaddress via --addr")
+
+    reachability: *string
+    for validator <- validatorNodes par:
+        validatorStatus: *string
+        -- check that 'validator' is reachable from our relay
+        on validator:
+            validatorStatus <- OpString.identity("VALIDATOR REACHABLE")
+        par validatorStatus <- Peer.timeout(timeout, "VALIDATOR NOT REACHABLE")
+
+        join validatorStatus[0] -- wait for either validator being reached, or timeout to happen
+
+        -- save validator status to variable to avoid matching on a stream
+        st <- Op.identity(validatorStatus)
+        if st! == "VALIDATOR REACHABLE":
+            -- check that 'target' is reachable from 'validator'
+            targetStatus: *string
+            on targetNode via validator:
+                targetStatus <- OpString.identity("TARGET REACHABLE")
+            par targetStatus <- Peer.timeout(timeout, "TARGET NOT REACHABLE")
+
+            join targetStatus[0] -- wait for target to be reachable, or timeout to happen
+            reachability <<- OpString.concat_strings("target ", targetNode, " validator ", validator, " status ", targetStatus[0])
+        else:
+            -- if validator isn't reachable, report that
+            reachability <<- OpString.concat_strings("validator ", validator, " relay ", HOST_PEER_ID, " status ", "VALIDATOR NOT REACHABLE")
+
+    -- Wait for all validations to finish
+    join reachability[Op.array_length(validatorNodes) - 1]
+
+    <- reachability
+
+data Setup:
+    target: PeerId
+    validators: []PeerId
+
+func checkAllNodes(setups: []Setup, timeout: u32) -> []string:
+    statuses: *string
+    for setup <- setups:
+        for status <- checkNodeIsUp(setup.target, setup.validators, timeout):
+            statuses <<- status
+            Console.print(status)
+    <- statuses

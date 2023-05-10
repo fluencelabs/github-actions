@@ -16,32 +16,5 @@ outputs:
     value: ${{ steps.check.outputs.log }}
 
 runs:
-  using: composite
-
-  steps:
-    - name: Setup node
-      uses: actions/setup-node@v3
-      with:
-        node-version: "16"
-
-    - name: Install aqua
-      shell: bash
-      working-directory: ${{ github.action_path }}
-      run: |
-        # Install aqua
-        npm install --no-audit --no-fund --silent @fluencelabs/aqua@${{ inputs.aqua-version }}
-
-    - name: Check aqua version
-      shell: bash
-      working-directory: ${{ github.action_path }}
-      run: |
-        # Check aqua version
-        npx aqua --version
-
-    - name: Check connectivity to ${{ inputs.target }}
-      id: check
-      shell: bash
-      working-directory: ${{ github.action_path }}
-      run: |
-        # Check connectivity to ${{ inputs.target }}
-        ./check.sh ${{ inputs.target }} ${{ github.action_path }}/healthcheck.aqua
+  using: "node16"
+  main: "dist/index.js"
