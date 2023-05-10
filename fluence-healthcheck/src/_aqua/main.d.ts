@@ -38,32 +38,17 @@ export function registerOpString(peer: IFluenceClient$$, serviceId: string, serv
 // Functions
  
 
-export function checkNodeIsUp(
+export function checkPeer(
     targetNode: string,
     validatorNodes: string[],
     timeout: number,
     config?: {ttl?: number}
 ): Promise<string[]>;
 
-export function checkNodeIsUp(
+export function checkPeer(
     peer: IFluenceClient$$,
     targetNode: string,
     validatorNodes: string[],
-    timeout: number,
-    config?: {ttl?: number}
-): Promise<string[]>;
-
- 
-
-export function checkAllNodes(
-    setups: { target: string; validators: string[]; }[],
-    timeout: number,
-    config?: {ttl?: number}
-): Promise<string[]>;
-
-export function checkAllNodes(
-    peer: IFluenceClient$$,
-    setups: { target: string; validators: string[]; }[],
     timeout: number,
     config?: {ttl?: number}
 ): Promise<string[]>;

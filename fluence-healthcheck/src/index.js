@@ -1,7 +1,7 @@
 import "@fluencelabs/js-client.node";
 import { Fluence } from "@fluencelabs/js-client.api";
 import * as network from "@fluencelabs/fluence-network-environment";
-import { checkAllNodes } from "./_aqua/main";
+import { checkPeer } from "./_aqua/main.js";
 
 async function main() {
   const env = process.env.ENV;
@@ -30,20 +30,21 @@ async function main() {
     await Fluence.connect(relay.multiaddr);
 
     const data = peers.map(({ peerId }, index) => ({
-      target: peerId,
+      peer: peerId,
       validators: peers.filter((_, idx) => idx !== index).map((n) => n.peerId),
     }));
 
     for (const setup of data) {
       try {
-        console.log(`Checking nodes for target: ${setup.target}`);
-        await checkAllNodes(setup, timeout);
+        const { multiaddr } = peers.find(({ peerId }) => peerId === setup.peer);
+        console.log(`Checking peer: ${multiaddr}`);
+        await checkPeer(setup.peer, setup.validators, timeout);
       } catch (e) {
         console.error(JSON.stringify(e, null, 2));
       }
     }
   } catch (e) {
-    console.error(`Error connecting to Fluence relay: ${e}`);
+    console.error(`Error connecting to ${relay.multiaddr}: ${e}`);
   } finally {
     await Fluence.disconnect();
   }

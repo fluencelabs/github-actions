@@ -7,7 +7,7 @@ service OpString("op"):
     concat_strings(a: string, b: string, c: string, d: string, e: string, f: string) -> string
     identity(s: string) -> string
 
-func checkNodeIsUp(targetNode: PeerId, validatorNodes: []PeerId, timeout: u32) -> []string:
+func checkPeer(targetNode: PeerId, validatorNodes: []PeerId, timeout: u32) -> []string:
     if HOST_PEER_ID == targetNode:
         Console.print("targetNode must be different from HOST_PEER_ID. Please pass another multuaddress via --addr")
 
@@ -40,15 +40,3 @@ func checkNodeIsUp(targetNode: PeerId, validatorNodes: []PeerId, timeout: u32) -
     join reachability[Op.array_length(validatorNodes) - 1]
 
     <- reachability
-
-data Setup:
-    target: PeerId
-    validators: []PeerId
-
-func checkAllNodes(setups: []Setup, timeout: u32) -> []string:
-    statuses: *string
-    for setup <- setups:
-        for status <- checkNodeIsUp(setup.target, setup.validators, timeout):
-            statuses <<- status
-            Console.print(status)
-    <- statuses

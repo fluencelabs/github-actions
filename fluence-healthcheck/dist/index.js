@@ -63199,14 +63199,6 @@ function socketOnError() {
 
 /***/ }),
 
-/***/ 290:
-/***/ ((module) => {
-
-module.exports = eval("require")("./_aqua/main");
-
-
-/***/ }),
-
 /***/ 39491:
 /***/ ((module) => {
 
@@ -101331,21 +101323,475 @@ function throwIfNotSupported() {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@fluencelabs/interfaces/dist/fluenceClient.js
+/**
+ * Fluence JS Client connection states as string literals
+ */
+const ConnectionStates = (/* unused pure expression or super */ null && (['disconnected', 'connecting', 'connected', 'disconnecting']));
+/**
+ * For internal use. Checks if the object is a Fluence Peer
+ */
+const asFluencePeer = (fluencePeerCandidate) => {
+    if (isFluencePeer(fluencePeerCandidate)) {
+        return fluencePeerCandidate;
+    }
+    throw new Error(`Argument ${fluencePeerCandidate} is not a Fluence Peer`);
+};
+/**
+ * For internal use. Checks if the object is a Fluence Peer
+ */
+const isFluencePeer = (fluencePeerCandidate) => {
+    if (fluencePeerCandidate && fluencePeerCandidate.__isFluenceAwesome) {
+        return true;
+    }
+    return false;
+};
+
 ;// CONCATENATED MODULE: ./node_modules/@fluencelabs/js-client.api/dist/index.modern.mjs
-const n=()=>globalThis.fluence,a=()=>{const e=n();return e?Promise.resolve(e):new Promise((e,t)=>{let a,i=50;a=setInterval(()=>{0===i&&(clearInterval(a),t("Could not load Fluence JS Client library.\nIf you are using Node.js that probably means that you forgot in install or import the @fluencelabs/js-client.node package.\nIf you are using a browser, then you probably forgot to add the <script> tag to your HTML.\nPlease refer to the documentation page for more details: https://fluence.dev/docs/build/js-client/installation\n"));let r=n();r&&(clearInterval(a),e(r)),i--},100)})};function i(){return i=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},i.apply(this,arguments)}const r=async(e,t,n)=>{const{args:i,client:r,config:o}=await c(e,t);return(await a()).callAquaFunction({args:i,def:t,script:n,config:o||{},peer:r})},o=async(e,t)=>{const{peer:n,service:i,serviceId:r}=await l(e,t.defaultServiceId);return(await a()).registerService({def:t,service:i,serviceId:r,peer:n})},c=async(n,r)=>{const o=e(r),c=Object.keys(o),l=c.length;let s,u,f;if(t(n[0]))s=n[0],u=n.slice(1,l+1),f=n[l+1];else{const e=await a();if(!e.defaultClient)throw new Error("Could not register Aqua service because the client is not initialized. Did you forget to call Fluence.connect()?");s=e.defaultClient,u=n.slice(0,l),f=n[l]}if(u.length!==l)throw new Error(`Incorrect number of arguments. Expecting ${l}`);return{client:s,config:f,args:c.reduce((e,t,n)=>i({},e,{[t]:u[n]}),{})}},l=async(e,n)=>{let i,r,o;if(t(e[0]))i=e[0];else{const e=await a();if(!e.defaultClient)throw new Error("Could not register Aqua service because the client is not initialized. Did you forget to call Fluence.connect()?");i=e.defaultClient}return r="string"==typeof e[0]?e[0]:"string"==typeof e[1]?e[1]:n,o=t(e[0])||"object"!=typeof e[0]?"object"==typeof e[1]?e[1]:e[2]:e[0],{peer:i,serviceId:r,service:o}},s={connect:async(e,t)=>{const n=await a(),i=await n.clientFactory(e,t);n.defaultClient=i},disconnect:async()=>{var e;const t=await a();await(null==(e=t.defaultClient)?void 0:e.disconnect()),t.defaultClient=void 0},onConnectionStateChange(e){const t=n();return t&&t.defaultClient?t.defaultClient.onConnectionStateChange(e):(a().then(t=>{var n;null==(n=t.defaultClient)||n.onConnectionStateChange(e)}),"disconnected")},getClient:async()=>{const e=await a();if(!e.defaultClient)throw new Error("Fluence client is not initialized. Call Fluence.connect() first");return e.defaultClient}},u=async(e,t)=>{const n=await a();return await n.clientFactory(e,t)},f=async e=>{const t=await a();return await t.callAquaFunction(e)},d=async e=>{const t=await a();return await t.registerService(e)};
+const n=()=>globalThis.fluence,a=()=>{const e=n();return e?Promise.resolve(e):new Promise((e,t)=>{let a,i=50;a=setInterval(()=>{0===i&&(clearInterval(a),t("Could not load Fluence JS Client library.\nIf you are using Node.js that probably means that you forgot in install or import the @fluencelabs/js-client.node package.\nIf you are using a browser, then you probably forgot to add the <script> tag to your HTML.\nPlease refer to the documentation page for more details: https://fluence.dev/docs/build/js-client/installation\n"));let r=n();r&&(clearInterval(a),e(r)),i--},100)})};function i(){return i=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},i.apply(this,arguments)}const r=async(e,t,n)=>{const{args:i,client:r,config:o}=await c(e,t);return(await a()).callAquaFunction({args:i,def:t,script:n,config:o||{},peer:r})},o=async(e,t)=>{const{peer:n,service:i,serviceId:r}=await l(e,t.defaultServiceId);return(await a()).registerService({def:t,service:i,serviceId:r,peer:n})},c=async(n,r)=>{const o=getArgumentTypes(r),c=Object.keys(o),l=c.length;let s,u,f;if(isFluencePeer(n[0]))s=n[0],u=n.slice(1,l+1),f=n[l+1];else{const e=await a();if(!e.defaultClient)throw new Error("Could not register Aqua service because the client is not initialized. Did you forget to call Fluence.connect()?");s=e.defaultClient,u=n.slice(0,l),f=n[l]}if(u.length!==l)throw new Error(`Incorrect number of arguments. Expecting ${l}`);return{client:s,config:f,args:c.reduce((e,t,n)=>i({},e,{[t]:u[n]}),{})}},l=async(e,n)=>{let i,r,o;if(t(e[0]))i=e[0];else{const e=await a();if(!e.defaultClient)throw new Error("Could not register Aqua service because the client is not initialized. Did you forget to call Fluence.connect()?");i=e.defaultClient}return r="string"==typeof e[0]?e[0]:"string"==typeof e[1]?e[1]:n,o=t(e[0])||"object"!=typeof e[0]?"object"==typeof e[1]?e[1]:e[2]:e[0],{peer:i,serviceId:r,service:o}},s={connect:async(e,t)=>{const n=await a(),i=await n.clientFactory(e,t);n.defaultClient=i},disconnect:async()=>{var e;const t=await a();await(null==(e=t.defaultClient)?void 0:e.disconnect()),t.defaultClient=void 0},onConnectionStateChange(e){const t=n();return t&&t.defaultClient?t.defaultClient.onConnectionStateChange(e):(a().then(t=>{var n;null==(n=t.defaultClient)||n.onConnectionStateChange(e)}),"disconnected")},getClient:async()=>{const e=await a();if(!e.defaultClient)throw new Error("Fluence client is not initialized. Call Fluence.connect() first");return e.defaultClient}},u=async(e,t)=>{const n=await a();return await n.clientFactory(e,t)},f=async e=>{const t=await a();return await t.callAquaFunction(e)},d=async e=>{const t=await a();return await t.registerService(e)};
 //# sourceMappingURL=index.modern.mjs.map
 
 // EXTERNAL MODULE: ./node_modules/@fluencelabs/fluence-network-environment/dist/index.js
 var fluence_network_environment_dist = __nccwpck_require__(2157);
-// EXTERNAL MODULE: ./node_modules/@vercel/ncc/dist/ncc/@@notfound.js?./_aqua/main
-var main = __nccwpck_require__(290);
+;// CONCATENATED MODULE: ./src/_aqua/main.js
+/* eslint-disable */
+// @ts-nocheck
+/**
+ *
+ * This file is auto-generated. Do not edit manually: changes may be erased.
+ * Generated by Aqua compiler: https://github.com/fluencelabs/aqua/.
+ * If you find any bugs, please write an issue on GitHub: https://github.com/fluencelabs/aqua/issues
+ * Aqua version: 0.10.2
+ *
+ */
+
+
+    
+
+
+// Services
+
+
+
+function registerConsole(...args) {
+    registerService$$(
+        args,
+        {
+    "defaultServiceId" : "run-console",
+    "functions" : {
+        "tag" : "labeledProduct",
+        "fields" : {
+            "print" : {
+                "tag" : "arrow",
+                "domain" : {
+                    "tag" : "labeledProduct",
+                    "fields" : {
+                        "msg" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        }
+                    }
+                },
+                "codomain" : {
+                    "tag" : "nil"
+                }
+            }
+        }
+    }
+}
+    );
+}
+      
+
+
+
+
+function registerOpString(...args) {
+    registerService$$(
+        args,
+        {
+    "defaultServiceId" : "op",
+    "functions" : {
+        "tag" : "labeledProduct",
+        "fields" : {
+            "concat_strings" : {
+                "tag" : "arrow",
+                "domain" : {
+                    "tag" : "labeledProduct",
+                    "fields" : {
+                        "a" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        },
+                        "b" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        },
+                        "c" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        },
+                        "d" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        },
+                        "e" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        },
+                        "f" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        }
+                    }
+                },
+                "codomain" : {
+                    "tag" : "unlabeledProduct",
+                    "items" : [
+                        {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        }
+                    ]
+                }
+            },
+            "identity" : {
+                "tag" : "arrow",
+                "domain" : {
+                    "tag" : "labeledProduct",
+                    "fields" : {
+                        "s" : {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        }
+                    }
+                },
+                "codomain" : {
+                    "tag" : "unlabeledProduct",
+                    "items" : [
+                        {
+                            "tag" : "scalar",
+                            "name" : "string"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+    );
+}
+      
+// Functions
+
+function checkPeer(...args) {
+
+    let script = `
+                    (xor
+                     (seq
+                      (seq
+                       (seq
+                        (seq
+                         (seq
+                          (call %init_peer_id% ("getDataSrv" "-relay-") [] -relay-)
+                          (call %init_peer_id% ("getDataSrv" "targetNode") [] targetNode)
+                         )
+                         (call %init_peer_id% ("getDataSrv" "validatorNodes") [] validatorNodes)
+                        )
+                        (call %init_peer_id% ("getDataSrv" "timeout") [] timeout)
+                       )
+                       (new $reachability
+                        (seq
+                         (seq
+                          (seq
+                           (seq
+                            (seq
+                             (seq
+                              (seq
+                               (seq
+                                (xor
+                                 (match -relay- targetNode
+                                  (xor
+                                   (call %init_peer_id% ("run-console" "print") ["targetNode must be different from HOST_PEER_ID. Please pass another multuaddress via --addr"])
+                                   (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
+                                  )
+                                 )
+                                 (call %init_peer_id% ("op" "noop") [])
+                                )
+                                (par
+                                 (fold validatorNodes validator-0
+                                  (par
+                                   (new $targetStatus
+                                    (new $validatorStatus
+                                     (seq
+                                      (seq
+                                       (seq
+                                        (seq
+                                         (par
+                                          (seq
+                                           (call -relay- ("op" "noop") [])
+                                           (xor
+                                            (seq
+                                             (call validator-0 ("op" "identity") ["VALIDATOR REACHABLE"] $validatorStatus)
+                                             (call -relay- ("op" "noop") [])
+                                            )
+                                            (seq
+                                             (call -relay- ("op" "noop") [])
+                                             (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 2])
+                                            )
+                                           )
+                                          )
+                                          (call %init_peer_id% ("peer" "timeout") [timeout "VALIDATOR NOT REACHABLE"] $validatorStatus)
+                                         )
+                                         (new $validatorStatus_test
+                                          (seq
+                                           (seq
+                                            (seq
+                                             (call %init_peer_id% ("math" "add") [0 1] validatorStatus_incr)
+                                             (fold $validatorStatus validatorStatus_fold_var
+                                              (seq
+                                               (seq
+                                                (ap validatorStatus_fold_var $validatorStatus_test)
+                                                (canon %init_peer_id% $validatorStatus_test  #validatorStatus_iter_canon)
+                                               )
+                                               (xor
+                                                (match #validatorStatus_iter_canon.length validatorStatus_incr
+                                                 (null)
+                                                )
+                                                (next validatorStatus_fold_var)
+                                               )
+                                              )
+                                              (never)
+                                             )
+                                            )
+                                            (canon %init_peer_id% $validatorStatus_test  #validatorStatus_result_canon)
+                                           )
+                                           (ap #validatorStatus_result_canon validatorStatus_gate)
+                                          )
+                                         )
+                                        )
+                                        (canon %init_peer_id% $validatorStatus  #validatorStatus_canon)
+                                       )
+                                       (call %init_peer_id% ("op" "identity") [#validatorStatus_canon] st)
+                                      )
+                                      (xor
+                                       (match st.$.[0]! "VALIDATOR REACHABLE"
+                                        (xor
+                                         (seq
+                                          (seq
+                                           (seq
+                                            (seq
+                                             (par
+                                              (seq
+                                               (seq
+                                                (call -relay- ("op" "noop") [])
+                                                (call validator-0 ("op" "noop") [])
+                                               )
+                                               (xor
+                                                (seq
+                                                 (seq
+                                                  (call targetNode ("op" "identity") ["TARGET REACHABLE"] $targetStatus)
+                                                  (call validator-0 ("op" "noop") [])
+                                                 )
+                                                 (call -relay- ("op" "noop") [])
+                                                )
+                                                (seq
+                                                 (seq
+                                                  (call validator-0 ("op" "noop") [])
+                                                  (call -relay- ("op" "noop") [])
+                                                 )
+                                                 (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 3])
+                                                )
+                                               )
+                                              )
+                                              (call %init_peer_id% ("peer" "timeout") [timeout "TARGET NOT REACHABLE"] $targetStatus)
+                                             )
+                                             (new $targetStatus_test
+                                              (seq
+                                               (seq
+                                                (seq
+                                                 (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr)
+                                                 (fold $targetStatus targetStatus_fold_var
+                                                  (seq
+                                                   (seq
+                                                    (ap targetStatus_fold_var $targetStatus_test)
+                                                    (canon %init_peer_id% $targetStatus_test  #targetStatus_iter_canon)
+                                                   )
+                                                   (xor
+                                                    (match #targetStatus_iter_canon.length targetStatus_incr
+                                                     (null)
+                                                    )
+                                                    (next targetStatus_fold_var)
+                                                   )
+                                                  )
+                                                  (never)
+                                                 )
+                                                )
+                                                (canon %init_peer_id% $targetStatus_test  #targetStatus_result_canon)
+                                               )
+                                               (ap #targetStatus_result_canon targetStatus_gate)
+                                              )
+                                             )
+                                            )
+                                            (new $targetStatus_test-0
+                                             (seq
+                                              (seq
+                                               (seq
+                                                (call %init_peer_id% ("math" "add") [0 1] targetStatus_incr-0)
+                                                (fold $targetStatus targetStatus_fold_var-0
+                                                 (seq
+                                                  (seq
+                                                   (ap targetStatus_fold_var-0 $targetStatus_test-0)
+                                                   (canon %init_peer_id% $targetStatus_test-0  #targetStatus_iter_canon-0)
+                                                  )
+                                                  (xor
+                                                   (match #targetStatus_iter_canon-0.length targetStatus_incr-0
+                                                    (null)
+                                                   )
+                                                   (next targetStatus_fold_var-0)
+                                                  )
+                                                 )
+                                                 (never)
+                                                )
+                                               )
+                                               (canon %init_peer_id% $targetStatus_test-0  #targetStatus_result_canon-0)
+                                              )
+                                              (ap #targetStatus_result_canon-0 targetStatus_gate-0)
+                                             )
+                                            )
+                                           )
+                                           (call %init_peer_id% ("op" "concat_strings") ["target " targetNode " validator " validator-0 " status " targetStatus_gate-0.$.[0]!] concat_strings)
+                                          )
+                                          (ap concat_strings $reachability)
+                                         )
+                                         (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 4])
+                                        )
+                                       )
+                                       (seq
+                                        (call %init_peer_id% ("op" "concat_strings") ["validator " validator-0 " relay " -relay- " status " "VALIDATOR NOT REACHABLE"] concat_strings-0)
+                                        (ap concat_strings-0 $reachability)
+                                       )
+                                      )
+                                     )
+                                    )
+                                   )
+                                   (next validator-0)
+                                  )
+                                  (never)
+                                 )
+                                 (null)
+                                )
+                               )
+                               (call %init_peer_id% ("op" "array_length") [validatorNodes] array_length)
+                              )
+                              (call %init_peer_id% ("math" "sub") [array_length 1] sub)
+                             )
+                             (new $reachability_test
+                              (seq
+                               (seq
+                                (seq
+                                 (call %init_peer_id% ("math" "add") [sub 1] reachability_incr)
+                                 (fold $reachability reachability_fold_var
+                                  (seq
+                                   (seq
+                                    (ap reachability_fold_var $reachability_test)
+                                    (canon %init_peer_id% $reachability_test  #reachability_iter_canon)
+                                   )
+                                   (xor
+                                    (match #reachability_iter_canon.length reachability_incr
+                                     (null)
+                                    )
+                                    (next reachability_fold_var)
+                                   )
+                                  )
+                                  (never)
+                                 )
+                                )
+                                (canon %init_peer_id% $reachability_test  #reachability_result_canon)
+                               )
+                               (ap #reachability_result_canon reachability_gate)
+                              )
+                             )
+                            )
+                            (call %init_peer_id% ("op" "array_length") [validatorNodes] array_length-0)
+                           )
+                           (call %init_peer_id% ("math" "sub") [array_length-0 1] sub-0)
+                          )
+                          (canon %init_peer_id% $reachability  #-reachability-fix-0)
+                         )
+                         (ap #-reachability-fix-0 -reachability-flat-0)
+                        )
+                       )
+                      )
+                      (xor
+                       (call %init_peer_id% ("callbackSrv" "response") [-reachability-flat-0])
+                       (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 5])
+                      )
+                     )
+                     (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 6])
+                    )
+    `
+    return r(
+        args,
+        {
+    "functionName" : "checkPeer",
+    "arrow" : {
+        "tag" : "arrow",
+        "domain" : {
+            "tag" : "labeledProduct",
+            "fields" : {
+                "targetNode" : {
+                    "tag" : "scalar",
+                    "name" : "string"
+                },
+                "validatorNodes" : {
+                    "tag" : "array",
+                    "type" : {
+                        "tag" : "scalar",
+                        "name" : "string"
+                    }
+                },
+                "timeout" : {
+                    "tag" : "scalar",
+                    "name" : "u32"
+                }
+            }
+        },
+        "codomain" : {
+            "tag" : "unlabeledProduct",
+            "items" : [
+                {
+                    "tag" : "array",
+                    "type" : {
+                        "tag" : "scalar",
+                        "name" : "string"
+                    }
+                }
+            ]
+        }
+    },
+    "names" : {
+        "relay" : "-relay-",
+        "getDataSrv" : "getDataSrv",
+        "callbackSrv" : "callbackSrv",
+        "responseSrv" : "callbackSrv",
+        "responseFnName" : "response",
+        "errorHandlingSrv" : "errorHandlingSrv",
+        "errorFnName" : "error"
+    }
+},
+        script
+    )
+}
+
+/* eslint-enable */
 ;// CONCATENATED MODULE: ./src/index.js
 
 
 
 
 
-async function src_main() {
+async function main() {
   const env = process.env.ENV;
   const timeout = parseInt(process.env.TIMEOUT) || 25000;
   let peers, relay;
@@ -101378,20 +101824,21 @@ async function src_main() {
 
     for (const setup of data) {
       try {
-        console.log(`Checking nodes for target: ${setup.target}`);
-        await (0,main.checkAllNodes)(setup, timeout);
+        const { multiaddr } = peers.find(({ peerId }) => peerId === setup.target);
+        console.log(`Checking target: ${multiaddr}`);
+        await checkPeer(setup, timeout);
       } catch (e) {
         console.error(JSON.stringify(e, null, 2));
       }
     }
   } catch (e) {
-    console.error(`Error connecting to Fluence relay: ${e}`);
+    console.error(`Error connecting to ${relay.multiaddr}: ${e}`);
   } finally {
     await s.disconnect();
   }
 }
 
-src_main();
+main();
 
 })();
 
