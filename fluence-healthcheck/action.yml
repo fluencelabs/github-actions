@@ -22,8 +22,6 @@ runs:
       with:
         node-version: "16"
         registry-url: "https://registry.npmjs.org"
-        cache-dependency-path: ${{ github.action_path }}/package-lock.json
-        cache: "npm"
 
     - run: npm i
       working-directory: ${{ github.action_path }}

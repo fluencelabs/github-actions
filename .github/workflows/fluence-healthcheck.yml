@@ -17,7 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: jenseng/dynamic-uses@v1
+      - uses: actions/checkout@v3
+
+      - name: Run check
+        uses: ./fluence-healthcheck
         with:
-          uses: fluencelabs/github-actions/fluence-healthcheck@${{ github.ref }}
-          with: '{ "env": "stage" }'
+          env: stage
