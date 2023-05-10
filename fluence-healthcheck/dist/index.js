@@ -4375,7 +4375,7 @@ module.exports = { mask, unmask };
 
 
 try {
-  module.exports = require(__nccwpck_require__.ab + "prebuilds/linux-x64/node.napi.node");
+  module.exports = require(__nccwpck_require__.ab + "prebuilds/linux-x64/node.napi1.node");
 } catch (e) {
   module.exports = __nccwpck_require__(57218);
 }
@@ -52703,7 +52703,7 @@ module.exports = isValidUTF8;
 
 
 try {
-  module.exports = require(__nccwpck_require__.ab + "prebuilds/linux-x64/node.napi1.node");
+  module.exports = require(__nccwpck_require__.ab + "prebuilds/linux-x64/node.napi.node");
 } catch (e) {
   module.exports = __nccwpck_require__(92534);
 }
@@ -101494,9 +101494,9 @@ function checkPeer(...args) {
                         (seq
                          (seq
                           (call %init_peer_id% ("getDataSrv" "-relay-") [] -relay-)
-                          (call %init_peer_id% ("getDataSrv" "targetNode") [] targetNode)
+                          (call %init_peer_id% ("getDataSrv" "targetPeer") [] targetPeer)
                          )
-                         (call %init_peer_id% ("getDataSrv" "validatorNodes") [] validatorNodes)
+                         (call %init_peer_id% ("getDataSrv" "validatorPeers") [] validatorPeers)
                         )
                         (call %init_peer_id% ("getDataSrv" "timeout") [] timeout)
                        )
@@ -101510,16 +101510,16 @@ function checkPeer(...args) {
                               (seq
                                (seq
                                 (xor
-                                 (match -relay- targetNode
+                                 (match -relay- targetPeer
                                   (xor
-                                   (call %init_peer_id% ("run-console" "print") ["targetNode must be different from HOST_PEER_ID. Please pass another multuaddress via --addr"])
+                                   (call %init_peer_id% ("run-console" "print") ["targetPeer must be different from HOST_PEER_ID. Please pass another multuaddress via --addr"])
                                    (call %init_peer_id% ("errorHandlingSrv" "error") [%last_error% 1])
                                   )
                                  )
                                  (call %init_peer_id% ("op" "noop") [])
                                 )
                                 (par
-                                 (fold validatorNodes validator-0
+                                 (fold validatorPeers validator-0
                                   (par
                                    (new $targetStatus
                                     (new $validatorStatus
@@ -101590,7 +101590,7 @@ function checkPeer(...args) {
                                                (xor
                                                 (seq
                                                  (seq
-                                                  (call targetNode ("op" "identity") ["TARGET REACHABLE"] $targetStatus)
+                                                  (call targetPeer ("op" "identity") ["TARGET REACHABLE"] $targetStatus)
                                                   (call validator-0 ("op" "noop") [])
                                                  )
                                                  (call -relay- ("op" "noop") [])
@@ -101660,7 +101660,7 @@ function checkPeer(...args) {
                                              )
                                             )
                                            )
-                                           (call %init_peer_id% ("op" "concat_strings") ["target " targetNode " validator " validator-0 " status " targetStatus_gate-0.$.[0]!] concat_strings)
+                                           (call %init_peer_id% ("op" "concat_strings") ["target " targetPeer " validator " validator-0 " status " targetStatus_gate-0.$.[0]!] concat_strings)
                                           )
                                           (ap concat_strings $reachability)
                                          )
@@ -101682,7 +101682,7 @@ function checkPeer(...args) {
                                  (null)
                                 )
                                )
-                               (call %init_peer_id% ("op" "array_length") [validatorNodes] array_length)
+                               (call %init_peer_id% ("op" "array_length") [validatorPeers] array_length)
                               )
                               (call %init_peer_id% ("math" "sub") [array_length 1] sub)
                              )
@@ -101713,7 +101713,7 @@ function checkPeer(...args) {
                               )
                              )
                             )
-                            (call %init_peer_id% ("op" "array_length") [validatorNodes] array_length-0)
+                            (call %init_peer_id% ("op" "array_length") [validatorPeers] array_length-0)
                            )
                            (call %init_peer_id% ("math" "sub") [array_length-0 1] sub-0)
                           )
@@ -101740,11 +101740,11 @@ function checkPeer(...args) {
         "domain" : {
             "tag" : "labeledProduct",
             "fields" : {
-                "targetNode" : {
+                "targetPeer" : {
                     "tag" : "scalar",
                     "name" : "string"
                 },
-                "validatorNodes" : {
+                "validatorPeers" : {
                     "tag" : "array",
                     "type" : {
                         "tag" : "scalar",
@@ -101818,15 +101818,17 @@ async function main() {
     await s.connect(relay.multiaddr);
 
     const data = peers.map(({ peerId }, index) => ({
-      target: peerId,
+      peer: peerId,
       validators: peers.filter((_, idx) => idx !== index).map((n) => n.peerId),
     }));
 
     for (const setup of data) {
       try {
-        const { multiaddr } = peers.find(({ peerId }) => peerId === setup.target);
-        console.log(`Checking target: ${multiaddr}`);
-        await checkPeer(setup, timeout);
+        const { multiaddr } = peers.find(({ peerId }) => peerId === setup.peer);
+        console.log(`Checking peer: ${multiaddr}`);
+        await checkPeer(setup.peer, setup.validators, timeout, {
+          ttl: timeout,
+        });
       } catch (e) {
         console.error(JSON.stringify(e, null, 2));
       }

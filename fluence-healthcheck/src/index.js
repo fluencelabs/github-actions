@@ -38,11 +38,8 @@ async function main() {
       try {
         const { multiaddr } = peers.find(({ peerId }) => peerId === setup.peer);
         console.log(`Checking peer: ${multiaddr}`);
-        await checkPeer({
-          targetPeer: setup.peer,
-          validatorPeers: setup.validators,
-          timeout: timeout,
-          config: { ttl: timeout },
+        await checkPeer(setup.peer, setup.validators, timeout, {
+          ttl: timeout,
         });
       } catch (e) {
         console.error(JSON.stringify(e, null, 2));
