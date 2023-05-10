@@ -25,23 +25,22 @@ async function main() {
       relay = network.randomKras();
       break;
     default:
-      console.error('Invalid ENV value. Use "stage", "testnet", or "kras".');
+      console.error('Invalid "env" input. Use "stage", "testnet", or "kras".');
       process.exit(1);
   }
 
   try {
-    console.log(relay)
     await Fluence.connect(relay.multiaddr);
 
-    const data = peers.map(({ peerId }, index) => ({
+    const data = peers.map(({ peerId, multiaddr }, index) => ({
       peer: peerId,
+      multiaddr: multiaddr,
       validators: peers.filter((_, idx) => idx !== index).map((n) => n.peerId),
     }));
 
     for (const setup of data) {
       try {
-        const { multiaddr } = peers.find(({ peerId }) => peerId === setup.peer);
-        console.log(`Checking peer: ${multiaddr}`);
+        console.log(`Checking peer: ${setup.multiaddr}`);
         const result = await checkPeer(setup.peer, setup.validators, timeout, {
           ttl: timeout,
         });
@@ -49,11 +48,12 @@ async function main() {
       } catch (e) {
         const errorMessage = JSON.stringify(e, null, 2);
         console.error(errorMessage);
-        errorMessages.push(`${multiaddr} failed: ${errorMessage}`);
+        errorMessages.push(`${setup.multiaddr} failed:\n ${errorMessage}`);
       }
     }
   } catch (e) {
     console.error(`Error connecting to ${relay.multiaddr}:\n ${e}`);
+    errorMessages.push(`Error connecting to ${relay.multiaddr}:\n ${e}`);
   } finally {
     await Fluence.disconnect();
   }

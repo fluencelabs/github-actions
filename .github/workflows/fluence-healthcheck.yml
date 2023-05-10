@@ -22,4 +22,4 @@ jobs:
       - name: Run check
         uses: ./fluence-healthcheck
         with:
-          target: stage
+          env: stage
