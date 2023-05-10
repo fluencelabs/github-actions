@@ -39,16 +39,16 @@ export function registerOpString(peer: IFluenceClient$$, serviceId: string, serv
  
 
 export function checkPeer(
-    targetNode: string,
-    validatorNodes: string[],
+    targetPeer: string,
+    validatorPeers: string[],
     timeout: number,
     config?: {ttl?: number}
 ): Promise<string[]>;
 
 export function checkPeer(
     peer: IFluenceClient$$,
-    targetNode: string,
-    validatorNodes: string[],
+    targetPeer: string,
+    validatorPeers: string[],
     timeout: number,
     config?: {ttl?: number}
 ): Promise<string[]>;
