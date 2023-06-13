@@ -133,6 +133,6 @@ runs:
         cat <<'ACCESS' >> $GITHUB_STEP_SUMMARY
         ### Access to Fluence cargo registry
         ```
-        cargo login --registry fluence $(vault read -filed=token kv/cargo-registry/users/dev)
+        cargo login --registry fluence $(vault read -field=token kv/cargo-registry/users/dev)
         ```
         ACCESS
