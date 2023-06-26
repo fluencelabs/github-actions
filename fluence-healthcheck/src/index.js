@@ -21,7 +21,6 @@ async function main() {
       }
     }
 
-    handleErrors(errorMessages);
     await Fluence.disconnect();
   } catch (error) {
     core.setFailed(error.message);
@@ -43,38 +42,33 @@ async function attemptToConnect(peers) {
 }
 
 async function performCheck(setup, timeout, errorMessages) {
-  try {
     console.log(`Checking target: ${setup.multiaddr}`);
-    let validators = setup.validators.map((v) => v.peerId);
-    const result = await checkPeer(setup.peer, validators, timeout, {
-      ttl: timeout,
-    });
+    let validators = setup.validators;
 
-    for (let validator of setup.validators) {
-      if (isTargetReachable(result)) {
-        console.log(`Target reachable from ${validator.multiaddr}`);
-      } else {
-        console.log(`Target not reachable from ${validator.multiaddr}`);
-      }
+    let checkResult = null;
+    for (let validator of validators) {
+        try {
+            const result = await checkPeer(setup.peer, validator.peerId, timeout, {
+                ttl: timeout,
+            });
+
+            if (isTargetReachable(result)) {
+                console.log(`Target reachable from ${validator.multiaddr}`);
+            } else {
+                console.log(`Target not reachable from ${validator.multiaddr}`);
+            }
+
+            checkResult = { ...result, peer: setup.multiaddr };
+        } catch (e) {
+            const errorMessage = `Target check from ${validator.multiaddr} failed with error:\n ${
+              JSON.stringify(e, null, 2)
+            }`;
+            console.error(errorMessage);
+            errorMessages.push(errorMessage);
+        }
     }
 
-    return { ...result, peer: setup.multiaddr };
-  } catch (e) {
-    const errorMessage = `Target ${setup.multiaddr} check failed with error:\n ${
-      JSON.stringify(e, null, 2)
-    }`;
-    console.error(errorMessage);
-    errorMessages.push(errorMessage);
-  }
-}
-
-function handleErrors(errors) {
-  if (errors.length > 0) {
-    const errorMessage = errors.map((e) => e.error).join("\n");
-    core.setOutput("error_log", errorMessage);
-    console.log(errorMessage);
-    process.exit(1);
-  }
+    return checkResult;
 }
 
 function getPeersByEnv(env) {
