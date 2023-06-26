@@ -5,67 +5,74 @@ import * as network from "@fluencelabs/fluence-network-environment";
 import { checkPeer } from "./_aqua/main.js";
 
 async function main() {
-  const env = core.getInput("env");
-  const timeout = parseInt(core.getInput("timeout"));
-  const peers = getPeersByEnv(env);
+  try {
+    const env = core.getInput("env");
+    const timeout = parseInt(core.getInput("timeout"));
+    const peers = getPeersByEnv(env);
 
-  const errorMessages = [];
-  let connected = false;
+    await attemptToConnect(peers);
+    const data = generatePeerData(peers);
 
+    let errorMessages = [];
+    for (let setup of data) {
+      const checkResult = await performCheck(setup, timeout, errorMessages);
+      if (!isTargetReachable(checkResult)) {
+        errorMessages.push(checkResult);
+      }
+    }
+
+    handleErrors(errorMessages);
+    await Fluence.disconnect();
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+
+async function attemptToConnect(peers) {
   for (let retryCount = 0; retryCount < 3; retryCount++) {
     const relay = getRandomRelay(peers);
 
     try {
       await Fluence.connect(relay.multiaddr);
-      connected = true;
-      break;
+      return;
     } catch (e) {
       console.error(`Error connecting to ${relay.multiaddr}:\n ${e}`);
-      errorMessages.push(`Error connecting to ${relay.multiaddr}:\n ${e}`);
     }
   }
+  throw new Error("Could not connect to relay.");
+}
 
-  if (connected) {
-    try {
-      const data = generatePeerData(peers);
-      const results = [];
+async function performCheck(setup, timeout, errorMessages) {
+  try {
+    console.log(`Checking target: ${setup.multiaddr}`);
+    let validators = setup.validators.map((v) => v.peerId);
+    const result = await checkPeer(setup.peer, validators, timeout, {
+      ttl: timeout,
+    });
 
-      for (const setup of data) {
-        try {
-          console.log(`Checking peer: ${setup.multiaddr}`);
-          const result = await checkPeer(
-            setup.peer,
-            setup.validators,
-            timeout,
-            {
-              ttl: timeout,
-            },
-          );
-
-          results.push(result);
-        } catch (e) {
-          const errorMessage = JSON.stringify(e, null, 2);
-          console.error(errorMessage);
-          errorMessages.push(`${setup.multiaddr} failed:\n ${errorMessage}`);
-        }
-      }
-
-      if (results.every(isTargetReachable)) {
-        console.log(results);
+    for (let validator of setup.validators) {
+      if (isTargetReachable(result)) {
+        console.log(`Target reachable from ${validator.multiaddr}`);
       } else {
-        throw new Error("Target is not reachable or other error occurred.");
+        console.log(`Target not reachable from ${validator.multiaddr}`);
       }
-    } catch (e) {
-      console.error(e);
-      errorMessages.push(`Error during peer checks:\n ${e}`);
-    } finally {
-      await Fluence.disconnect();
     }
-  }
 
-  if (errorMessages.length > 0) {
-    core.setOutput("error_log", errorMessages.join("\n"));
-    console.log(errorMessages.join("\n"));
+    return { ...result, peer: setup.multiaddr };
+  } catch (e) {
+    const errorMessage = `Target ${setup.multiaddr} check failed with error:\n ${
+      JSON.stringify(e, null, 2)
+    }`;
+    console.error(errorMessage);
+    errorMessages.push(errorMessage);
+  }
+}
+
+function handleErrors(errors) {
+  if (errors.length > 0) {
+    const errorMessage = errors.map((e) => e.error).join("\n");
+    core.setOutput("error_log", errorMessage);
+    console.log(errorMessage);
     process.exit(1);
   }
 }
@@ -93,14 +100,19 @@ function generatePeerData(peers) {
   return peers.map(({ peerId, multiaddr }, index) => ({
     peer: peerId,
     multiaddr: multiaddr,
-    validators: peers.filter((_, idx) => idx !== index).map((n) => n.peerId),
+    validators: peers
+      .filter((_, idx) => idx !== index)
+      .map((n) => ({ peerId: n.peerId, multiaddr: n.multiaddr })),
   }));
 }
 
 function isTargetReachable(result) {
-  return result.includes("status TARGET REACHABLE");
+  for (const key in result) {
+    if (result[key].includes("TARGET REACHABLE")) {
+      return true;
+    }
+  }
+  return false;
 }
 
-main().catch((error) => {
-  core.setFailed(error.message);
-});
+main();
