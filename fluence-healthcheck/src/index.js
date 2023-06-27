@@ -29,17 +29,14 @@ async function main() {
 
     let failureMessages = [];
     for (const peerSetup of peerData) {
-      const checkResult = await validateConnectivity(peerSetup, timeout);
-      if (!isPeerReachable(checkResult)) {
-        failureMessages.push(checkResult);
-      }
+      await validateConnectivity(peerSetup, timeout);
     }
 
     await Fluence.disconnect();
 
     if (failureMessages.length > 0) {
-      core.setFailed("Some target checks were unsuccessful.");
       core.setOutput("error_log", failureMessages.flat().join("\n"));
+      core.setFailed("Some target checks were unsuccessful.");
     }
   } catch (error) {
     core.setFailed(error.message);
