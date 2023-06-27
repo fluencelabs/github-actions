@@ -29,7 +29,10 @@ async function main() {
 
     let failureMessages = [];
     for (const peerSetup of peerData) {
-      await validateConnectivity(peerSetup, timeout);
+      const [failed, log] = await validateConnectivity(peerSetup, timeout);
+      if (failed) {
+        failureMessages.push(log);
+      }
     }
 
     await Fluence.disconnect();
@@ -58,7 +61,8 @@ async function establishConnection(peerList) {
 
 async function validateConnectivity(peerSetup, timeout) {
   core.info(`\nChecking target: ${peerSetup.multiaddr}`);
-  let errorList = [];
+  let failed = false;
+  let errorLog = [];
   for (const validator of peerSetup.validators) {
     try {
       const result = await checkPeer(
@@ -78,11 +82,12 @@ async function validateConnectivity(peerSetup, timeout) {
         `Target ${peerSetup.multiaddr} check from ${validator.multiaddr} failed with error:\n ${
           JSON.stringify(error, null, 2)
         }`;
+      failed = true;
       core.info(chalk.red(errorMessage));
-      errorList.push(errorMessage);
+      errorLog.push(errorMessage);
     }
   }
-  return errorList;
+  return [failed, errorLog];
 }
 
 const selectRandomRelay = (peerList) =>
