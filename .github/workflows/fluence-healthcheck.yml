@@ -13,7 +13,7 @@ concurrency:
 
 env:
   CI: true
-  FORCE_COLORS: true
+  FORCE_COLOR: true
 
 jobs:
   healthcheck:
