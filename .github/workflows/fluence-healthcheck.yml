@@ -18,6 +18,7 @@ env:
 jobs:
   healthcheck:
     name: "connectivity - stage"
+    timeout-minutes: 10
     runs-on: ubuntu-latest
 
     steps:
