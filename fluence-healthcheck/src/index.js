@@ -37,7 +37,7 @@ async function main() {
 
     await Fluence.disconnect();
 
-    if (failureMessages.length) {
+    if (failureMessages.length > 0) {
       core.setFailed("Some target checks were unsuccessful.");
       core.setOutput("error_log", failureMessages.flat().join("\n"));
     }
