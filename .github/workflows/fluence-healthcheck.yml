@@ -12,7 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ACTIONS_STEP_DEBUG: true
+  CI: true
+  FORCE_COLORS: true
 
 jobs:
   healthcheck:
