@@ -60,7 +60,7 @@ async function establishConnection(peerList) {
 }
 
 async function validateConnectivity(peerSetup, timeout) {
-  core.info(`Checking target: ${peerSetup.multiaddr}`);
+  core.info(`\nChecking target: ${peerSetup.multiaddr}`);
   let errorList = [];
   for (const validator of peerSetup.validators) {
     try {
