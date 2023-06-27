@@ -40,6 +40,7 @@ async function main() {
     if (failureMessages.length > 0) {
       core.setOutput("error_log", failureMessages.flat().join("\n"));
       core.setFailed("Some target checks were unsuccessful.");
+      process.exit(1)
     }
   } catch (error) {
     core.setFailed(error.message);
