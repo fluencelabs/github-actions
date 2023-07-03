@@ -28,4 +28,4 @@ jobs:
         uses: ./fluence-healthcheck
         with:
           env: stage
-          # env: kras
+          version: 0.5.1
