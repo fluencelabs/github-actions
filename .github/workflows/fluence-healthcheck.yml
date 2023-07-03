@@ -4,16 +4,21 @@ on:
   pull_request:
     paths:
       - "fluence-healthcheck/**"
-      - ".github/workflows/fluence-healthcheck-ci.yml"
+      - ".github/workflows/fluence-healthcheck.yml"
       - "!**.md"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
+env:
+  CI: true
+  FORCE_COLOR: true
+
 jobs:
   healthcheck:
     name: "connectivity - stage"
+    timeout-minutes: 10
     runs-on: ubuntu-latest
 
     steps:
@@ -22,4 +27,5 @@ jobs:
       - name: Run check
         uses: ./fluence-healthcheck
         with:
-          target: stage
+          env: stage
+          # env: kras
