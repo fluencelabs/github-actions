@@ -1,6 +1,6 @@
 {
   "name": "fluence-healthcheck",
-  "version": "0.4.17",
+  "version": "0.5.1",
   "exports": "./src/index.js",
   "type": "module",
   "scripts": {
@@ -19,6 +19,6 @@
   },
   "devDependencies": {
     "@fluencelabs/aqua-lib": "^0.7.1",
-    "@fluencelabs/cli": "^0.4.17"
+    "@fluencelabs/cli": "^0.5.1"
   }
 }
