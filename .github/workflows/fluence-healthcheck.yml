@@ -28,4 +28,3 @@ jobs:
         uses: ./fluence-healthcheck
         with:
           env: stage
-          version: 0.5.1
