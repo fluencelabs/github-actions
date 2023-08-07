@@ -37,10 +37,10 @@ runs:
         fi
 
     - name: Install cargo-workspaces
-      uses: baptiste0928/cargo-install@v2.0.0
+      uses: baptiste0928/cargo-install@v2.1.0
       with:
         crate: cargo-workspaces
-        version: v0.2.37
+        version: v0.2.44
 
     - name: Set version to snapshot
       shell: bash
