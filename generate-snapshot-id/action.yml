@@ -42,7 +42,9 @@ runs:
           BRANCH=release-please
         fi
         BRANCH="${BRANCH//[^a-zA-Z0-9-]/-}"
+        shopt -s extglob
         BRANCH="${BRANCH//+(-)/-}"
+        shopt -u extglob
         echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
         echo "id=${BRANCH}-${SHA}-${{ github.run_number }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
