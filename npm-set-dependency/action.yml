@@ -29,11 +29,20 @@ runs:
 
   steps:
     - name: Override dependency
+      if: inputs.package-manager != 'npm'
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
       run: |
         # Override dependency
         ${{ inputs.package-manager }} install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
+
+    - name: Override dependency with yarn
+      if: inputs.package-manager == 'yarn'
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+      run: |
+        # Override dependency
+        yarn add ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
