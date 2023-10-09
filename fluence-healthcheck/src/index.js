@@ -1,5 +1,4 @@
-import "@fluencelabs/js-client.node";
-import { Fluence } from "@fluencelabs/js-client.api";
+import { Fluence } from "@fluencelabs/js-client";
 import * as network from "@fluencelabs/fluence-network-environment";
 import { checkPeer } from "./_aqua/main.js";
 import * as core from "@actions/core";
