@@ -37,12 +37,20 @@ runs:
         ${{ inputs.package-manager }} install ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Override dependency with yarn
-      if: inputs.package-manager == 'yarn'
+      if: inputs.package-manager == 'yarn' && !contains(inputs.package-manager, 'dev')
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
       run: |
         # Override dependency
-        yarn add ${{ inputs.package }}@${{ inputs.version }}
+        yarn add -E ${{ inputs.package }}@${{ inputs.version }}
+
+    - name: Override dev dependency with yarn
+      if: inputs.package-manager == 'yarn' && contains(inputs.package-manager, 'dev')
+      shell: bash
+      working-directory: "${{ inputs.working-directory }}"
+      run: |
+        # Override dependency
+        yarn add ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
