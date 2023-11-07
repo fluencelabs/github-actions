@@ -42,7 +42,7 @@ runs:
       working-directory: "${{ inputs.working-directory }}"
       run: |
         # Override dependency
-        yarn add -E ${{ inputs.package }}@${{ inputs.version }}
+        yarn add ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Override dev dependency with yarn
       if: inputs.package-manager == 'yarn' && inputs.flags == '--dev'
@@ -50,7 +50,7 @@ runs:
       working-directory: "${{ inputs.working-directory }}"
       run: |
         # Override dependency
-        yarn add ${{ inputs.flags }} -E ${{ inputs.package }}@${{ inputs.version }}
+        yarn add ${{ inputs.flags }} ${{ inputs.package }}@${{ inputs.version }}
 
     - name: Setup dasel
       uses: allejo/setup-dasel@v1
