@@ -10,6 +10,10 @@ inputs:
     description: "Path to directory with root Cargo.toml"
     type: string
     default: "./"
+  no-check:
+    description: "Do not check dependencies in Cargo.lock file"
+    type: string
+    default: "false"
 
 runs:
   using: composite
@@ -52,11 +56,13 @@ runs:
         cargo update ${packages}
 
     - name: Setup dasel
+      if: inputs.no-check != 'true'
       uses: allejo/setup-dasel@v1
       with:
         version: 1.27.3
 
     - name: Check that dependency is set in Cargo.lock
+      if: inputs.no-check != 'true'
       shell: bash
       working-directory: ${{ inputs.path }}
       run: |
@@ -75,6 +81,7 @@ runs:
         exit ${exit}
 
     - name: Print results to check summary
+      if: inputs.no-check != 'true'
       shell: bash
       working-directory: ${{ inputs.path }}
       run: |
