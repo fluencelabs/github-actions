@@ -129,7 +129,9 @@ runs:
         cat <<SNAPSHOT >> $GITHUB_STEP_SUMMARY
         - [${crate}@${{ env.VERSION }}](https://crates.fluence.dev/#/crate?name=${crate}&version=${{ env.VERSION }})
         ### How to add to Cargo.toml
+        \`\`\`
         ${crate} = { version = "=${{ env.VERSION }}", registry = "fluence" }
+        \`\`\`
         SNAPSHOT
         done < <(cargo workspaces list)
         cat <<'ACCESS' >> $GITHUB_STEP_SUMMARY
