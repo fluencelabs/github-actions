@@ -35,7 +35,7 @@ function overrideDependencies(packageJson, dependencies) {
 
       fs.writeFileSync(
         packageJsonPath,
-        JSON.stringify(updatedPackageJson, null, 2),
+        JSON.stringify(updatedPackageJson, null, 2) + "\n",
       );
     }
   } catch (error) {
