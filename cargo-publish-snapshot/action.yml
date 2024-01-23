@@ -106,7 +106,7 @@ runs:
           --registry fluence \
           --allow-dirty \
           --no-verify
-          --skip-published \
+          --skip-published
         fi
 
     - name: Get final snapshot version
