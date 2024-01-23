@@ -105,7 +105,7 @@ runs:
         cargo publish \
           --registry fluence \
           --allow-dirty \
-          --no-verify
+          --no-verify \
           --skip-published
         fi
 
