@@ -97,6 +97,7 @@ runs:
             --from-git \
             --allow-dirty \
             --no-verify \
+            --skip-published \
             -y prerelease
           ((RETRY--))
         done
@@ -105,6 +106,7 @@ runs:
           --registry fluence \
           --allow-dirty \
           --no-verify
+          --skip-published \
         fi
 
     - name: Get final snapshot version
