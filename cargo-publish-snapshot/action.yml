@@ -88,6 +88,7 @@ runs:
       env:
         RETRY: 2
         CARGO_HTTP_CAINFO: "/etc/ssl/certs/ca-certificates.crt"
+        CARGO_REGISTRIES_FLUENCE_INDEX: "sparse+https://cargo.fluence.dev"
       run: |
         # Publish snapshots to self-hosted registry
         if (($(cargo ws list | wc -l) > 1)); then
@@ -98,7 +99,6 @@ runs:
             --from-git \
             --allow-dirty \
             --no-verify \
-            --skip-published \
             -y prerelease
           ((RETRY--))
         done
