@@ -88,7 +88,7 @@ runs:
       env:
         RETRY: 2
         CARGO_HTTP_CAINFO: "/etc/ssl/certs/ca-certificates.crt"
-        CARGO_REGISTRIES_FLUENCE_INDEX: "sparse+https://crates.fluence.dev/"
+        CARGO_REGISTRIES_FLUENCE_INDEX: "sparse+https://crates.fluence.dev/api/v1/crates/"
       run: |
         # Publish snapshots to self-hosted registry
         if (($(cargo ws list | wc -l) > 1)); then
