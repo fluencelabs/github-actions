@@ -87,6 +87,7 @@ runs:
       shell: bash
       env:
         RETRY: 2
+        CARGO_HTTP_CAINFO: "/etc/ssl/certs/ca-certificates.crt"
       run: |
         # Publish snapshots to self-hosted registry
         if (($(cargo ws list | wc -l) > 1)); then
