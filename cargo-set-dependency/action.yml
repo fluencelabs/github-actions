@@ -28,7 +28,14 @@ runs:
         echo '${{ inputs.dependencies }}' | jq -c > input.json
 
     - name: Setup python
+      if: ${{ !endsWith(matrix.os, '-arm') }}
       uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Setup python
+      if: ${{ matrix.os == 'ubuntu-arm' }}
+      uses: deadsnakes/action@v2.1.1
       with:
         python-version: "3.x"
 
