@@ -28,14 +28,7 @@ runs:
         echo '${{ inputs.dependencies }}' | jq -c > input.json
 
     - name: Setup python
-      if: runner.arch == 'x64'
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.x"
-
-    - name: Setup python
-      if: runner.arch == 'ARM64'
-      uses: deadsnakes/action@v2.1.1
+      uses: deadsnakes/action@v3.1.0
       with:
         python-version: "3.x"
 
