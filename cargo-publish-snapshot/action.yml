@@ -115,7 +115,7 @@ runs:
       shell: bash
       run: |
         # Get final snapshot version
-        version=$(cargo metadata --no-deps --format-version 1 | jq -r ".workspace_members[0]" | cut -d ' ' -f 2)
+        version=$(cargo metadata --no-deps --format-version 1 | jq -r ".workspace_members[0]" | cut -d '@' -f 2)
         echo "version=${version}" >> $GITHUB_OUTPUT
 
     - name: Print results to check summary
