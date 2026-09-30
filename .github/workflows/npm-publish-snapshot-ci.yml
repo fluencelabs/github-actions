@@ -1,0 +1,39 @@
+name: Test npm snapshot publishing
+
+on:
+  pull_request:
+    paths:
+      - npm-publish-snapshot/**
+      - .github/workflows/npm-publish-snapshot-ci.yml
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package-manager: [npm, pnpm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare package
+        run: |
+          mkdir fixture
+          echo '{"name":"snapshot-publish-fixture","version":"1.0.0"}' > fixture/package.json
+          git add fixture/package.json
+          git -c user.name=CI -c user.email=ci@example.invalid commit -m 'Add test package'
+      - uses: ./npm-publish-snapshot
+        id: snapshot
+        with:
+          working-directory: fixture
+          id: ci-test
+          package-manager: ${{ matrix.package-manager }}
+          flags: --dry-run --tag snapshot --registry https://npm.cloudless.dev
+      - name: Verify snapshot version
+        env:
+          VERSION: ${{ steps.snapshot.outputs.version }}
+        run: test "$VERSION" = '1.0.1-ci-test.0'
